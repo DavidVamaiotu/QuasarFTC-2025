@@ -337,7 +337,7 @@ public class ClassyMovementOP extends CommandOpMode {
                       ),
                       new SequentialCommandGroup(
                               new InstantCommand(() -> outtake.setGripperState(outtake.NOT_GRIPPING)),
-                              new WaitCommand(300),
+                              new WaitCommand(250),
                               new InstantCommand(outtake::transferPosition)
                       )
                 );
