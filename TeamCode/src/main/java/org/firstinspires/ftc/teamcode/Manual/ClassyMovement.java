@@ -100,9 +100,9 @@ public class ClassyMovement extends CommandOpMode {
                         new SelectCommand(
                                 // the first parameter is a map of commands
                                 new HashMap<Object, Command>() {{
-                                    put(IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED, new InstantCommand());
-                                    put(IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN, new InstantCommand());
-                                    put(IOSubsystem.SPECIMEN_STAGE.PLACING_SPECIMEN, new InstantCommand());
+                                    put(IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED, new InstantCommand(()-> telemetry.addLine("Test1")));
+                                    put(IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN, new InstantCommand(()-> telemetry.addLine("Test2")));
+                                    put(IOSubsystem.SPECIMEN_STAGE.PLACING_SPECIMEN, new InstantCommand(()-> telemetry.addLine("Test3")));
                                 }},
                                 // the selector
                                 this::getSpecStage

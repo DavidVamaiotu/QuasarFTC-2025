@@ -19,7 +19,7 @@ public class IOSubsystem extends SubsystemBase {
 
     private final CachingDcMotorEx slider2;
 
-    private final CachingDcMotorEx MoveAndDestroy;
+    private final DcMotorEx MoveAndDestroy;
 
     private final CachingServo Diffy1;
 
@@ -71,7 +71,7 @@ public class IOSubsystem extends SubsystemBase {
         sliderPID = new PIDController(kP2, kI2, kD2);
         slider1 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sld1"));
         slider2 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sld2"));
-        MoveAndDestroy = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "angle"));
+        MoveAndDestroy = hMap.get(DcMotorEx.class, "angle");
         Diffy1 = new CachingServo(hMap.get(Servo.class, "diffy1"));
         Diffy2 = new CachingServo(hMap.get(Servo.class, "diffy2"));
 
@@ -192,7 +192,7 @@ public class IOSubsystem extends SubsystemBase {
                 break;
             case OUTTAKE:
 //                targetAngle = 0;
-//                targetSlider = 1900;
+//                setSliderTarget(1900);
                 specStage = SPECIMEN_STAGE.UNINITIALIZED;
                 stage = IO_STAGE.INTAKE;
                 break;
