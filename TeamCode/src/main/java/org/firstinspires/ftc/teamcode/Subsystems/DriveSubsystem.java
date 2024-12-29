@@ -6,7 +6,10 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.util.MathUtils;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import java.util.Arrays;
 import java.util.function.DoubleSupplier;
@@ -16,72 +19,59 @@ import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 public class DriveSubsystem extends SubsystemBase {
 
     private double powerLimit = 1.0;
-    private final MecanumDrive drive;
-    private DoubleSupplier forward, strafe, rotation;
-    private Double gyro;
+    private final CachingDcMotorEx FL;
+    private final CachingDcMotorEx FR;
+    private final CachingDcMotorEx BL;
+    private final CachingDcMotorEx BR;
 
     public DriveSubsystem(final HardwareMap hardwareMap) {
         this(hardwareMap, "FL", "FR",
                 "BL", "BR");
     }
 
-    @Override
-    public void periodic() {
-        if (Arrays.asList(forward, strafe, rotation, gyro).contains(null))
-            return;
-
-        updateSpeeds(forward.getAsDouble(), strafe.getAsDouble(), rotation.getAsDouble(), gyro);
-    }
-
     private DriveSubsystem(HardwareMap hardwareMap, String leftFront, String rightFront, String leftBack, String rightBack) {
 
-        Motor FL = new Motor(hardwareMap, leftFront, Motor.GoBILDA.RPM_435);
-        Motor FR = new Motor(hardwareMap, rightFront, Motor.GoBILDA.RPM_435);
-        Motor BL = new Motor(hardwareMap, leftBack, Motor.GoBILDA.RPM_435);
-        Motor BR = new Motor(hardwareMap, rightBack, Motor.GoBILDA.RPM_435);
+        FL = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, leftFront));
+        FR = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, rightFront));
+        BL = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, leftBack));
+        BR = new CachingDcMotorEx(hardwareMap.get(DcMotorEx.class, rightBack));
 
-        FL.encoder.reset();
-        FR.encoder.reset();
-        BL.encoder.reset();
-        BR.encoder.reset();
+        FL.setDirection(DcMotorSimple.Direction.REVERSE);
+        BL.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        FR.setRunMode(Motor.RunMode.VelocityControl);
-        FL.setRunMode(Motor.RunMode.VelocityControl);
-        BR.setRunMode(Motor.RunMode.VelocityControl);
-        BL.setRunMode(Motor.RunMode.VelocityControl);
-
-        FL.setInverted(true);
-        BL.setInverted(true);
-
-
-        FR.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        FL.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        BR.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-        BL.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-        drive = new MecanumDrive(
-                FL,
-                FR,
-                BL,
-                BR
-        );
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
     }
 
-    public void setAxes(DoubleSupplier forward, DoubleSupplier strafe, DoubleSupplier rotation, Double gyro) {
-        this.forward = forward;
-        this.strafe = strafe;
-        this.rotation = rotation;
-        this.gyro = gyro;
-    }
+    public void updateSpeeds(double y, double x, double rx, double botHeading) {
+        // The equivalent button is start on Xbox-style controllers.
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-    public void updateSpeeds(double fwd, double st, double rot, double gyro) {
-        drive.driveFieldCentric(st, fwd, rot, gyro);
+        rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double frontLeftPower = (rotY + rotX + rx) / denominator;
+        double backLeftPower = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower = (rotY + rotX - rx) / denominator;
+
+        FL.setPower(frontLeftPower * powerLimit);
+        BL.setPower(backLeftPower * powerLimit);
+        FR.setPower(frontRightPower * powerLimit);
+        BR.setPower(backRightPower * powerLimit);
     }
 
     public void setPowerLimit(double limit) {
-        powerLimit = MathUtils.clamp(Math.abs(limit), 0, 1);
-        drive.setMaxSpeed(powerLimit);
+        powerLimit = limit;
     }
 }

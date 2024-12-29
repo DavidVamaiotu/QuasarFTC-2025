@@ -29,7 +29,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.pedroPathing.localization.GoBildaPinpointDriver;
+import org.firstinspires.ftc.robotcontroller.GoBildaPinpointDriver;
 
 import java.util.Locale;
 
@@ -61,6 +61,7 @@ For support, contact tech@gobilda.com
 
 //TODO: If tuning comment out the @Disabled
 @TeleOp(name="goBILDA® PinPoint Odometry Example", group="Linear OpMode")
+@Disabled
 
 public class SensorGoBildaPinpointExample extends LinearOpMode {
 
@@ -86,7 +87,6 @@ public class SensorGoBildaPinpointExample extends LinearOpMode {
         backwards is a negative number.
          */
         odo.setOffsets(-135, 180); //these are tuned for 3110-0002-0001 Product Insight #1
-
         /*
         Set the kind of pods used by your robot. If you're using goBILDA odometry pods, select either
         the goBILDA_SWINGARM_POD, or the goBILDA_4_BAR_POD.

@@ -10,7 +10,7 @@ public class FollowPathCommand extends CommandBase {
 
     private final Follower follower;
     private final PathChain path;
-    private boolean holdEnd = false;
+    private boolean holdEnd = true;
 
     public FollowPathCommand(Follower follower, PathChain path) {
         this.follower = follower;
