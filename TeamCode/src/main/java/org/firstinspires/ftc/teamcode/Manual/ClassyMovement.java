@@ -136,7 +136,6 @@ public class ClassyMovement extends CommandOpMode {
         if (gamepad1.options)
             imu.resetYaw();
 
-
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         chassis.updateSpeeds(driver1.getLeftY(), driver1.getLeftX(), driver1.getRightX(), botHeading);

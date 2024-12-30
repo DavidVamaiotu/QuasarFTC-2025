@@ -59,16 +59,14 @@ import org.firstinspires.ftc.teamcode.Subsystems.IOSubsystem;
 public class ValueSetter extends OpMode
 {
     // Declare OpMode members.
-    public static double kP = 0;
+    public static double kP = 0.001;
     public static double kI = 0;
-    public static double kD = 0;
-    public static double kF = 0;
+    public static double kD = 0.0001;
+    public static double kF = 0.25;
 
-    public static double kP2 = 0;
+    public static double kP2 = 0.02;
     public static double kI2 = 0;
-    public static double kD2 = 0;
-
-    public static double targetAngle = 0;
+    public static double kD2 = 0.0002;
 
     public static double targetSlider = 0;
 
@@ -99,7 +97,6 @@ public class ValueSetter extends OpMode
 
         IO = new IOSubsystem(hardwareMap);
 
-
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
@@ -108,6 +105,7 @@ public class ValueSetter extends OpMode
      */
     @Override
     public void init_loop() {
+        timeAngle.reset();
     }
 
     /*
@@ -178,37 +176,43 @@ public class ValueSetter extends OpMode
         }
     }
 
-    double ticks_in_degrees = 1425.1 / 360.00;
+    double ticks_in_degrees = 8192.00 / 360.00;
+
+    public static double targetAngle = 1200;
 
     /*
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
      */
     @Override
     public void loop() {
-//        double timeSeconds = timeAngle.seconds();
-//
-//        double instantTargetPosition = motion_profile_position(3,3, targetAngle-IO.getAnglePosition(), timeSeconds);
-
-
+        double timeSeconds = timeAngle.milliseconds();
+        sliderPID.setPID(kP2, kI2, kD2);
         anglePID.setPID(kP, kI, kD);
-        double ff = Math.cos(Math.toRadians(IO.getAnglePosition() / ticks_in_degrees)) * kF;
-//        sliderPID.setPID(kP2, kI2, kD2);
-        double output = anglePID.calculate(IO.getAnglePosition(), targetAngle);
+
+//        double instantTargetPosition = motion_profile_position(3,3, targetAngle-IO.getAngleMeasurement(), timeSeconds);
+        double output = anglePID.calculate(IO.getAngleMeasurement(), targetAngle);
+        double ff = targetAngle >= 10 ? (Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)) * kF) : 0;
 //        double output = anglePID.calculate(IO.getAnglePosition(), instantTargetPosition);
-//        double output2 = sliderPID.calculate(IO.getSliderPosition(), targetSlider);
+        double output2 = sliderPID.calculate(IO.getSliderPosition(), targetSlider);
 
 
 //        IO.setDiffyYaw(YawPos);
 //        IO.setDiffyPitch(PitchPos);
 
-        double power = output + ff;
+        double powerF = output + ff;
 
-        IO.setAnglePower(power);
+        double powerF2 = output2;
+
+        IO.setAnglePower(powerF);
+        IO.setPower(powerF2);
 //        IO.setSlidersPower(output2);
 
-        telemetryA.addData("currentAnglePosition", IO.getAnglePosition());
+        telemetryA.addData("currentAnglePosition", IO.getAngleMeasurement());
         telemetryA.addData("angleTarget", targetAngle);
-        telemetryA.addData("ff", Math.cos(Math.toRadians(IO.getAnglePosition() / ticks_in_degrees)));
+        telemetryA.addData("currentSliderPosition", IO.getSliderPosition());
+        telemetryA.addData("sliderTarget", targetSlider);
+//        telemetryA.addData("instantTargetPosition", instantTargetPosition);
+        telemetryA.addData("ff", Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)));
         telemetryA.update();
     }
 

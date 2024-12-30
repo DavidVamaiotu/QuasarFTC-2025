@@ -23,6 +23,8 @@ public class IOSubsystem extends SubsystemBase {
 
     private final CachingServo Diffy1;
 
+    private final DcMotorEx enc;
+
     private final CachingServo Diffy2;
 
     private ElapsedTime time = new ElapsedTime();
@@ -69,21 +71,20 @@ public class IOSubsystem extends SubsystemBase {
     public IOSubsystem(final HardwareMap hMap) {
         anglePID = new PIDFController(kP, kI, kD, kF);
         sliderPID = new PIDController(kP2, kI2, kD2);
-        slider1 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sld1"));
-        slider2 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sld2"));
+        slider1 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldSt"));
+        slider2 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldDr"));
         MoveAndDestroy = hMap.get(DcMotorEx.class, "angle");
+        enc = hMap.get(DcMotorEx.class, "feed");
         Diffy1 = new CachingServo(hMap.get(Servo.class, "diffy1"));
         Diffy2 = new CachingServo(hMap.get(Servo.class, "diffy2"));
 
-        Diffy2.setDirection(Servo.Direction.REVERSE);
-
+        slider1.setDirection(DcMotorSimple.Direction.REVERSE);
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slider2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        MoveAndDestroy.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        slider1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        slider2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        MoveAndDestroy.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Diffy2.setDirection(Servo.Direction.REVERSE);
+        enc.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void setPower(double power) {
@@ -257,20 +258,14 @@ public class IOSubsystem extends SubsystemBase {
         currentDiffyPitch = deg;
     }
 
-    public double getAnglePosition()
+    public double getAngleMeasurement()
     {
-        return MoveAndDestroy.getCurrentPosition();
+        return enc.getCurrentPosition();
     }
 
     public void setAnglePower(double power)
     {
         MoveAndDestroy.setPower(power);
-    }
-
-    public void setSlidersPower(double power)
-    {
-        slider1.setPower(power);
-        slider2.setPower(power);
     }
 
     public double getSliderPosition()
