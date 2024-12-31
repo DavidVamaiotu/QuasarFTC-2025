@@ -1,7 +1,12 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,19 +24,23 @@ public class IOSubsystem extends SubsystemBase {
 
     private final CachingDcMotorEx slider2;
 
-    private final DcMotorEx MoveAndDestroy;
+    private final CachingDcMotorEx MoveAndDestroy;
 
     private final CachingServo Diffy1;
+
+    private final CachingServo arm;
+
+    private final CachingServo gripper;
+
+    private final CachingServo arm2;
 
     private final DcMotorEx enc;
 
     private final CachingServo Diffy2;
-
-    private ElapsedTime time = new ElapsedTime();
-
     public enum IO_STAGE {
         INTAKE,
-        OUTTAKE
+        OUTTAKE,
+        OUTTAKE_UNLOADING
     }
 
     public IO_STAGE stage = IO_STAGE.INTAKE;
@@ -44,15 +53,17 @@ public class IOSubsystem extends SubsystemBase {
 
     public SPECIMEN_STAGE specStage = SPECIMEN_STAGE.UNINITIALIZED;
 
-    private double kP2 = 0;
+    private double kP2 = 0.012;
     private double kI2 = 0;
-    private double kD2 = 0;
+    private double kD2 = 0.0006;
 
 
-    private double kP = 0;
+    private double kP = 0.001;
     private double kI = 0;
-    private double kD = 0;
-    private double kF = 0;
+    private double kD = 0.0001;
+    public double kF = 0.25;
+
+    public boolean HoldPosition = false;
 
 
     private double currentDiffyYaw = 90;
@@ -61,152 +72,105 @@ public class IOSubsystem extends SubsystemBase {
     private double currentDiffy2Position = 0.5;
     private final double TICK_PER_DEGREE = 0.0028169014084507;
 
-    PIDFController anglePID;
+    PIDController anglePID;
     PIDController sliderPID;
 
     double targetAngle = 0;
 
     double targetSlider = 0;
 
+    public double GRIPPING = 0.75;
+    public double NOT_GRIPPING = 0.48;
+    public double PLACING_SAMPLE = 0.4;
+    public double LOADING_SAMPLE = 0.48;
+    public double LOADING_SPECIMEN = 0.6;
+
+    public double ARM_INIT = 0.05;
+    public double PITCH_TAKING_SAMPLE = -15;
+
+
     public IOSubsystem(final HardwareMap hMap) {
-        anglePID = new PIDFController(kP, kI, kD, kF);
+        anglePID = new PIDController(kP, kI, kD);
         sliderPID = new PIDController(kP2, kI2, kD2);
         slider1 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldSt"));
         slider2 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldDr"));
-        MoveAndDestroy = hMap.get(DcMotorEx.class, "angle");
+        MoveAndDestroy = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "angle"));
         enc = hMap.get(DcMotorEx.class, "feed");
-        Diffy1 = new CachingServo(hMap.get(Servo.class, "diffy1"));
-        Diffy2 = new CachingServo(hMap.get(Servo.class, "diffy2"));
+        Diffy1 = new CachingServo(hMap.get(Servo.class, "difL"));
+        Diffy2 = new CachingServo(hMap.get(Servo.class, "difD"));
+        arm = new CachingServo(hMap.get(Servo.class, "arm"));
+        arm2 = new CachingServo(hMap.get(Servo.class, "armX"));
+        gripper = new CachingServo(hMap.get(Servo.class, "grip"));
+
 
         slider1.setDirection(DcMotorSimple.Direction.REVERSE);
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+
         Diffy2.setDirection(Servo.Direction.REVERSE);
+        arm2.setDirection(Servo.Direction.REVERSE);
         enc.setDirection(DcMotorSimple.Direction.FORWARD);
 
         enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        slider1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setPower(double power) {
+    public void setSliderPower(double power) {
          slider1.setPower(power);
          slider2.setPower(power);
     }
 
 
-    public double motion_profile_position(double max_acceleration, double max_velocity, double distance, double elapsed_time) {
-       // Return the current reference position based on the given motion profile times, maximum acceleration, velocity, and current time.
-        // Calculate the time it takes to accelerate to max velocity
-
-        double acceleration_dt = max_velocity / max_acceleration;
-
-        // If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
-        double halfway_distance = distance / 2;
-        double acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-
-        if (acceleration_distance > halfway_distance) {
-            acceleration_dt = Math.sqrt(halfway_distance / (0.5 * max_acceleration));
-        }
-
-        acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-
-        // recalculate max velocity based on the time we have to accelerate and decelerate
-        max_velocity = max_acceleration * acceleration_dt;
-
-        // we decelerate at the same rate as we accelerate
-        double deceleration_dt = acceleration_dt;
-
-        // calculate the time that we're at max velocity
-        double cruise_distance = distance - 2 * acceleration_distance;
-        double cruise_dt = cruise_distance / max_velocity;
-        double deceleration_time = acceleration_dt + cruise_dt;
-
-        // check if we're still in the motion profile
-        double entire_dt = acceleration_dt + cruise_dt + deceleration_dt;
-        if (elapsed_time > entire_dt) {
-            return distance;
-        }
-
-        // if we're accelerating
-        if (elapsed_time < acceleration_dt) {
-            // use the kinematic equation for acceleration
-            return 0.5 * max_acceleration * (elapsed_time*elapsed_time);
-        }
-
-        // if we're cruising
-        else if (elapsed_time < deceleration_time) {
-            acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-            double cruise_current_dt = elapsed_time - acceleration_dt;
-
-            // use the kinematic equation for constant velocity
-            return acceleration_distance + max_velocity * cruise_current_dt;
-        }
-
-        // if we're decelerating
-        else {
-            acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-            cruise_distance = max_velocity * cruise_dt;
-            deceleration_time = elapsed_time - deceleration_time;
-
-            // use the kinematic equations to calculate the instantaneous desired position
-            return acceleration_distance + cruise_distance + max_velocity * deceleration_time - 0.5 * max_acceleration * (deceleration_time*deceleration_time);
-        }
-    }
+    double ticks_in_degrees = 8192.00 / 360.00;
 
     public void updateAngle() {
 
-        double instantTargetPosition = motion_profile_position(3, 3, targetAngle-MoveAndDestroy.getCurrentPosition(), time.seconds());
+//        double instantTargetPosition = motion_profile_position(3, 3, targetAngle-MoveAndDestroy.getCurrentPosition(), time.seconds());
 
         double output = anglePID.calculate(
-                MoveAndDestroy.getCurrentPosition(), instantTargetPosition
+                getAngleMeasurement(), targetAngle
         );
 
-        MoveAndDestroy.setPower(output);
+        double ff = targetAngle <= 10 ? 0 : (HoldPosition == false ? (Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)) * kF) : 0.2);
+
+        setAnglePower(output + ff);
     }
 
     public void updatePosition() {
 
         double output = sliderPID.calculate(
-                slider1.getCurrentPosition(), targetSlider
+                getSliderPosition(), targetSlider
         );
 
-        slider1.setPower(output);
-        slider2.setPower(output);
+        setSliderPower(output);
     }
 
     public void setAngleTarget(double angleTicks) {
-        time.reset();
         targetAngle = angleTicks;
+    }
+
+    public void setArmPosition(double pos) {
+        arm.setPosition(pos+0.01);
+        arm2.setPosition(pos);
+    }
+
+    public void setGripperState(double pos) {
+        gripper.setPosition(pos);
     }
 
     public void setSliderTarget(double sliderTicks) {
         targetSlider = sliderTicks;
     }
 
-    public void toPosition()
-    {
-        switch(stage) {
-            case INTAKE:
-//                targetAngle = 1300;
-//                targetSlider = 0;
-                specStage = SPECIMEN_STAGE.UNINITIALIZED;
-                stage = IO_STAGE.OUTTAKE;
-                break;
-            case OUTTAKE:
-//                targetAngle = 0;
-//                setSliderTarget(1900);
-                specStage = SPECIMEN_STAGE.UNINITIALIZED;
-                stage = IO_STAGE.INTAKE;
-                break;
-        }
-    }
 
 
     public void specimenCycle()
     {
         switch(specStage) {
             case UNINITIALIZED:
-                targetAngle = 700;
-                targetSlider = 0;
+                setAngleTarget(1200);
+                setSliderTarget(0);
                 //schimba unghiul bratului aici
                 specStage = SPECIMEN_STAGE.LOADING_SPECIMEN;
                 break;

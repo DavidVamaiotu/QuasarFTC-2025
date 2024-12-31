@@ -64,9 +64,9 @@ public class ValueSetter extends OpMode
     public static double kD = 0.0001;
     public static double kF = 0.25;
 
-    public static double kP2 = 0.02;
+    public static double kP2 = 0.017;
     public static double kI2 = 0;
-    public static double kD2 = 0.0002;
+    public static double kD2 = 0.0006;
 
     public static double targetSlider = 0;
 
@@ -74,6 +74,10 @@ public class ValueSetter extends OpMode
     public static double PitchPos = 90;
 
     public static double GRIPPER = 0.5;
+
+    public static double ARM_POS = 0.5;
+
+
 
 
     private ElapsedTime timeAngle;
@@ -97,6 +101,7 @@ public class ValueSetter extends OpMode
 
         IO = new IOSubsystem(hardwareMap);
 
+
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
 
@@ -116,83 +121,154 @@ public class ValueSetter extends OpMode
 
     }
 
-
-    public double motion_profile_position(double max_acceleration, double max_velocity, double distance, double elapsed_time) {
-        // Return the current reference position based on the given motion profile times, maximum acceleration, velocity, and current time.
-        // Calculate the time it takes to accelerate to max velocity
-
-        double acceleration_dt = max_velocity / max_acceleration;
-
-        // If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
-        double halfway_distance = distance / 2;
-        double acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-
-        if (acceleration_distance > halfway_distance) {
-            acceleration_dt = Math.sqrt(halfway_distance / (0.5 * max_acceleration));
-        }
-
-        acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-
-        // recalculate max velocity based on the time we have to accelerate and decelerate
-        max_velocity = max_acceleration * acceleration_dt;
-
-        // we decelerate at the same rate as we accelerate
-        double deceleration_dt = acceleration_dt;
-
-        // calculate the time that we're at max velocity
-        double cruise_distance = distance - 2 * acceleration_distance;
-        double cruise_dt = cruise_distance / max_velocity;
-        double deceleration_time = acceleration_dt + cruise_dt;
-
-        // check if we're still in the motion profile
-        double entire_dt = acceleration_dt + cruise_dt + deceleration_dt;
-        if (elapsed_time > entire_dt) {
-            return distance;
-        }
-
-        // if we're accelerating
-        if (elapsed_time < acceleration_dt) {
-            // use the kinematic equation for acceleration
-            return 0.5 * max_acceleration * (elapsed_time*elapsed_time);
-        }
-
-        // if we're cruising
-        else if (elapsed_time < deceleration_time) {
-            acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-            double cruise_current_dt = elapsed_time - acceleration_dt;
-
-            // use the kinematic equation for constant velocity
-            return acceleration_distance + max_velocity * cruise_current_dt;
-        }
-
-        // if we're decelerating
-        else {
-            acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
-            cruise_distance = max_velocity * cruise_dt;
-            deceleration_time = elapsed_time - deceleration_time;
-
-            // use the kinematic equations to calculate the instantaneous desired position
-            return acceleration_distance + cruise_distance + max_velocity * deceleration_time - 0.5 * max_acceleration * (deceleration_time*deceleration_time);
-        }
-    }
+//    public static double trapezoidalMotionProfile(double maxAcceleration, double maxVelocity, double distance, double elapsedTime)
+//    {
+//        // 1) Time to accelerate from 0 to maxVelocity
+//        double accelTime = maxVelocity / maxAcceleration;               // s
+//        double accelDistance = 0.5 * maxAcceleration * accelTime * accelTime;
+//
+//        // 2) Check if we actually reach maxVelocity
+//        //    If the distance needed for accel + decel is more than total distance,
+//        //    we can't reach maxVelocity (triangle profile).
+//        double halfDistance = distance / 2.0;
+//        if (accelDistance > halfDistance) {
+//            // Recompute accelTime so that we accelerate half the distance
+//            accelTime = Math.sqrt(halfDistance / (0.5 * maxAcceleration));
+//            accelDistance = 0.5 * maxAcceleration * (accelTime * accelTime);
+//        }
+//
+//        // The actual maxVelocity we can reach
+//        double actualMaxVelocity = maxAcceleration * accelTime;
+//
+//        // 3) Deceleration time is symmetric in this example
+//        double decelTime = accelTime;
+//
+//        // 4) Cruise (constant velocity) distance
+//        double cruiseDistance = distance - 2.0 * accelDistance;
+//        double cruiseTime = 0.0;
+//        if (cruiseDistance > 0) {
+//            cruiseTime = cruiseDistance / actualMaxVelocity;
+//        }
+//
+//        // 5) Total time
+//        double totalTime = accelTime + cruiseTime + decelTime;
+//
+//        // --- PHASE CHECKS ---
+//
+//        // A) If we're past the total time, we're at the end
+//        if (elapsedTime >= totalTime) {
+//            return distance;
+//        }
+//
+//        // B) Acceleration phase: t in [0, accelTime)
+//        if (elapsedTime < accelTime) {
+//            // x(t) = 0.5 * a * t^2
+//            return 0.5 * maxAcceleration * elapsedTime * elapsedTime;
+//        }
+//
+//        // C) Cruise phase: t in [accelTime, accelTime + cruiseTime)
+//        double cruiseStart = accelTime;
+//        double cruiseEnd = cruiseStart + cruiseTime;
+//        if (elapsedTime < cruiseEnd) {
+//            // Distance traveled after full accel
+//            double distanceAtAccelEnd = 0.5 * maxAcceleration * accelTime * accelTime;
+//            // Time spent in cruise
+//            double tCruise = elapsedTime - cruiseStart;
+//            // x(t) = distanceAtAccelEnd + v_max * tCruise
+//            return distanceAtAccelEnd + actualMaxVelocity * tCruise;
+//        }
+//
+//        // D) Deceleration phase: t in [cruiseEnd, totalTime)
+//        double decelStart = cruiseEnd;
+//        double tDecel = elapsedTime - decelStart;
+//
+//        // Distance traveled up to decel start
+//        double distanceAtAccelEnd = 0.5 * maxAcceleration * accelTime * accelTime;
+//        double distanceAtCruiseEnd = distanceAtAccelEnd + actualMaxVelocity * cruiseTime;
+//
+//        // x_decel(t) = v_max * tDecel - 0.5 * a * tDecel^2
+//        return distanceAtCruiseEnd
+//                + actualMaxVelocity * tDecel
+//                - 0.5 * maxAcceleration * tDecel * tDecel;
+//    }
+//
+//
+//    public double motion_profile_position(double max_acceleration, double max_velocity, double distance, double elapsed_time) {
+//        // Return the current reference position based on the given motion profile times, maximum acceleration, velocity, and current time.
+//        // Calculate the time it takes to accelerate to max velocity
+//
+//        double acceleration_dt = max_velocity / max_acceleration;
+//
+//        // If we can't accelerate to max velocity in the given distance, we'll accelerate as much as possible
+//        double halfway_distance = distance / 2;
+//        double acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
+//
+//        if (acceleration_distance > halfway_distance) {
+//            acceleration_dt = Math.sqrt(halfway_distance / (0.5 * max_acceleration));
+//        }
+//
+//        acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
+//
+//        // recalculate max velocity based on the time we have to accelerate and decelerate
+//        max_velocity = max_acceleration * acceleration_dt;
+//
+//        // we decelerate at the same rate as we accelerate
+//        double deceleration_dt = acceleration_dt;
+//
+//        // calculate the time that we're at max velocity
+//        double cruise_distance = distance - 2 * acceleration_distance;
+//        double cruise_dt = cruise_distance / max_velocity;
+//        double deceleration_time = acceleration_dt + cruise_dt;
+//
+//        // check if we're still in the motion profile
+//        double entire_dt = acceleration_dt + cruise_dt + deceleration_dt;
+//        if (elapsed_time > entire_dt) {
+//            return distance;
+//        }
+//
+//        // if we're accelerating
+//        if (elapsed_time < acceleration_dt) {
+//            // use the kinematic equation for acceleration
+//            return 0.5 * max_acceleration * (elapsed_time*elapsed_time);
+//        }
+//
+//        // if we're cruising
+//        else if (elapsed_time < deceleration_time) {
+//            acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
+//            double cruise_current_dt = elapsed_time - acceleration_dt;
+//
+//            // use the kinematic equation for constant velocity
+//            return acceleration_distance + max_velocity * cruise_current_dt;
+//        }
+//
+//        // if we're decelerating
+//        else {
+//            acceleration_distance = 0.5 * max_acceleration * (acceleration_dt*acceleration_dt);
+//            cruise_distance = max_velocity * cruise_dt;
+//            deceleration_time = elapsed_time - deceleration_time;
+//
+//            // use the kinematic equations to calculate the instantaneous desired position
+//            return acceleration_distance + cruise_distance + max_velocity * deceleration_time - 0.5 * max_acceleration * (deceleration_time*deceleration_time);
+//        }
+//    }
 
     double ticks_in_degrees = 8192.00 / 360.00;
 
-    public static double targetAngle = 1200;
+    public static double targetAngle = 0;
 
     /*
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
      */
     @Override
     public void loop() {
-        double timeSeconds = timeAngle.milliseconds();
         sliderPID.setPID(kP2, kI2, kD2);
         anglePID.setPID(kP, kI, kD);
 
-//        double instantTargetPosition = motion_profile_position(3,3, targetAngle-IO.getAngleMeasurement(), timeSeconds);
+//        double timeSeconds = timeAngle.seconds();
+//        double instantTargetPosition = trapezoidalMotionProfile(150,150, targetAngle-IO.getAngleMeasurement(), timeSeconds);
         double output = anglePID.calculate(IO.getAngleMeasurement(), targetAngle);
-        double ff = targetAngle >= 10 ? (Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)) * kF) : 0;
-//        double output = anglePID.calculate(IO.getAnglePosition(), instantTargetPosition);
+        double ff = Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)) * kF;
+//        double output = anglePID.calculate(IO.getAngleMeasurement(), instantTargetPosition);
         double output2 = sliderPID.calculate(IO.getSliderPosition(), targetSlider);
 
 
@@ -203,8 +279,8 @@ public class ValueSetter extends OpMode
 
         double powerF2 = output2;
 
-        IO.setAnglePower(powerF);
-        IO.setPower(powerF2);
+        IO.setSliderPower(output2);
+
 //        IO.setSlidersPower(output2);
 
         telemetryA.addData("currentAnglePosition", IO.getAngleMeasurement());
