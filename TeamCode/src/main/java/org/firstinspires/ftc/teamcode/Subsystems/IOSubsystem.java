@@ -40,7 +40,8 @@ public class IOSubsystem extends SubsystemBase {
     public enum IO_STAGE {
         INTAKE,
         OUTTAKE,
-        OUTTAKE_UNLOADING
+        OUTTAKE_UNLOADING,
+        INTAKE_LOADING
     }
 
     public IO_STAGE stage = IO_STAGE.INTAKE;
@@ -53,9 +54,9 @@ public class IOSubsystem extends SubsystemBase {
 
     public SPECIMEN_STAGE specStage = SPECIMEN_STAGE.UNINITIALIZED;
 
-    private double kP2 = 0.012;
+    private double kP2 = 0.02;
     private double kI2 = 0;
-    private double kD2 = 0.0006;
+    private double kD2 = 0.0003;
 
 
     private double kP = 0.001;
@@ -79,14 +80,14 @@ public class IOSubsystem extends SubsystemBase {
 
     double targetSlider = 0;
 
-    public double GRIPPING = 0.75;
-    public double NOT_GRIPPING = 0.48;
+    public double GRIPPING = 0.24;
+    public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.4;
     public double LOADING_SAMPLE = 0.48;
     public double LOADING_SPECIMEN = 0.6;
 
-    public double ARM_INIT = 0.05;
-    public double PITCH_TAKING_SAMPLE = -15;
+    public double ARM_INIT = 0.1;
+    public double PITCH_TAKING_SAMPLE = 0;
 
 
     public IOSubsystem(final HardwareMap hMap) {

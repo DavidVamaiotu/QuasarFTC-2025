@@ -100,8 +100,16 @@ public class ClassyMovement extends CommandOpMode {
                                         new InstantCommand(() -> {
                                             IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
                                             IO.stage = IOSubsystem.IO_STAGE.OUTTAKE;
+                                            IO.setArmPosition(IO.ARM_INIT);
+                                            IO.setDiffyPitch(90);
+                                            IO.setDiffyYaw(90);
+                                            IO.setSliderTarget(0);
                                         }),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT))
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 20),
+                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1900),
+                                        new WaitCommand(200),
+                                        new InstantCommand(() -> IO.HoldPosition = true)
                                 ),
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> {
@@ -118,32 +126,38 @@ public class ClassyMovement extends CommandOpMode {
                                             IO.stage = IOSubsystem.IO_STAGE.INTAKE;
                                         })
                                 ),
-                                () -> IO.stage == IOSubsystem.IO_STAGE.INTAKE
+                                () -> (IO.stage == IOSubsystem.IO_STAGE.INTAKE || IO.stage == IOSubsystem.IO_STAGE.INTAKE_LOADING)
                         )
                 );
 
         driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                        .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
+                        .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE || IO.stage == IOSubsystem.IO_STAGE.INTAKE_LOADING))
                                 .whenActive(
                                         new ConditionalCommand(
+                                                new SequentialCommandGroup(
+                                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                                                        new InstantCommand(() -> {
+                                                            IO.stage = IOSubsystem.IO_STAGE.INTAKE;
+                                                            IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
+                                                        })
+                                                ),
                                                 new SequentialCommandGroup(
                                                         new InstantCommand(() -> IO.setSliderTarget(800)),
                                                         new WaitUntilCommand(() -> IO.getSliderPosition() >= 700),
                                                         new InstantCommand(() -> {
                                                             IO.setArmPosition(IO.LOADING_SAMPLE);
                                                             IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                                                            IO.stage = IOSubsystem.IO_STAGE.INTAKE_LOADING;
+                                                            IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
                                                         })
                                                 ),
-                                                new SequentialCommandGroup(
-                                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
-                                                        new InstantCommand(() -> IO.setSliderTarget(0))
-                                                ),
-                                                () -> IO.getSliderPosition() <= 700
+                                                () -> IO.stage == IOSubsystem.IO_STAGE.INTAKE_LOADING
                                         )
                                 );
 
         driver2.getGamepadButton(GamepadKeys.Button.B)
-                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE_LOADING))
                 .whenActive(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
@@ -160,6 +174,7 @@ public class ClassyMovement extends CommandOpMode {
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE || IO.stage == IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING))
                 .toggleWhenActive(
                         new InstantCommand(() ->  {
+                            IO.HoldPosition = true;
                             IO.setSliderTarget(1850);
                             // fa sa miste bratul aici
                             IO.setArmPosition(IO.PLACING_SAMPLE);
@@ -173,7 +188,6 @@ public class ClassyMovement extends CommandOpMode {
                                 new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE)),
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> {
-                                            IO.HoldPosition = false;
                                             IO.setSliderTarget(0);
                                             IO.setDiffyPitch(90);
                                             IO.setDiffyYaw(90);

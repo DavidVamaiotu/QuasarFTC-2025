@@ -101,6 +101,8 @@ public class ValueSetter extends OpMode
 
         IO = new IOSubsystem(hardwareMap);
 
+        IO.initDiffy();
+
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -280,6 +282,9 @@ public class ValueSetter extends OpMode
         double powerF2 = output2;
 
         IO.setSliderPower(output2);
+        IO.setArmPosition(IO.LOADING_SAMPLE);
+        IO.setDiffyPitch(90);
+        IO.setDiffyYaw(90);
 
 //        IO.setSlidersPower(output2);
 
