@@ -98,8 +98,8 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new Point(23, 24, Point.CARTESIAN)
                         )
                 )
-                .setPathEndTimeoutConstraint(200)
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0))
+                .setPathEndTimeoutConstraint(200) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0)) // unghiul cu care porneste si cel cu care termina
                 .build();
 
 
@@ -154,7 +154,7 @@ public class AutonomieDreapta extends CommandOpMode {
                         new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                         new WaitCommand(200),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(follower, follower.pathBuilder()
+                                new FollowPathCommand(follower, follower.pathBuilder() // se roteste pe loc sa puna piesa
                                         .addPath(
                                                 new BezierLine(
                                                         new Point(23, 24, Point.CARTESIAN),
@@ -177,7 +177,7 @@ public class AutonomieDreapta extends CommandOpMode {
                         new WaitCommand(250),
                         new InstantCommand(() -> IO.setAngleTarget(0)),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
-                        new FollowPathCommand(follower, follower.pathBuilder()
+                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste la a doua piesa
                                 .addPath(
                                         new BezierLine(
                                                 new Point(23, 25, Point.CARTESIAN),
@@ -201,7 +201,7 @@ public class AutonomieDreapta extends CommandOpMode {
 
                         ),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(follower, follower.pathBuilder()
+                                new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a doua piesa
                                         .addPath(
                                                 new BezierLine(
                                                         new Point(23, 24, Point.CARTESIAN),
@@ -225,7 +225,7 @@ public class AutonomieDreapta extends CommandOpMode {
                         new WaitCommand(250),
                         new InstantCommand(() -> IO.setAngleTarget(0)),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
-                        new FollowPathCommand(follower, follower.pathBuilder()
+                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste la a treia piesa
                                 .addPath(
                                         new BezierLine(
                                                 new Point(23, 25, Point.CARTESIAN),
@@ -249,7 +249,7 @@ public class AutonomieDreapta extends CommandOpMode {
 
                         ),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(follower, follower.pathBuilder()
+                                new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a treia piesa
                                         .addPath(
                                                 new BezierLine(
                                                         new Point(23, 25, Point.CARTESIAN),
