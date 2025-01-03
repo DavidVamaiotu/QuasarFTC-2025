@@ -138,36 +138,36 @@
 ////        register(outtake, intake);
 ////
 ////
-////        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-////        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-////        phoneCam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
-////        AI = new SolvePerspective();
-////        phoneCam.setPipeline(AI);
+//        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        phoneCam = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
+//        AI = new SolvePerspective();
+//        phoneCam.setPipeline(AI);
 //
 //
 //        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
 //        // out when the RC activity is in portrait. We do our actual image processing assuming
 //        // landscape orientation, though.
 ////
-////        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-////        {
-////            @Override
-////            public void onOpened()
-////            {
-////                phoneCam.getWhiteBalanceControl().setMode(WhiteBalanceControl.Mode.MANUAL);
-////                phoneCam.getWhiteBalanceControl().setWhiteBalanceTemperature(temp);
-////                phoneCam.startStreaming(640,480, OpenCvCameraRotation.SENSOR_NATIVE);
-////
-////            }
-////
-////            @Override
-////            public void onError(int errorCode)
-////            {
-////                /*
-////                 * This will be called if the camera could not be opened
-////                 */
-////            }
-////        });
+//        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        {
+//            @Override
+//            public void onOpened()
+//            {
+//                phoneCam.getWhiteBalanceControl().setMode(WhiteBalanceControl.Mode.MANUAL);
+//                phoneCam.getWhiteBalanceControl().setWhiteBalanceTemperature(temp);
+//                phoneCam.startStreaming(640,480, OpenCvCameraRotation.SENSOR_NATIVE);
+//
+//            }
+//
+//            @Override
+//            public void onError(int errorCode)
+//            {
+//                /*
+//                 * This will be called if the camera could not be opened
+//                 */
+//            }
+//        });
 ////
 ////        FtcDashboard.getInstance().startCameraStream(phoneCam, 0);
 //

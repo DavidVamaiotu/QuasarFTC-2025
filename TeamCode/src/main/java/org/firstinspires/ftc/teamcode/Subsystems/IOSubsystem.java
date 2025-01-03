@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -19,6 +20,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import dev.frozenmilk.dairy.cachinghardware.CachingDcMotorEx;
 import dev.frozenmilk.dairy.cachinghardware.CachingServo;
 
+
+@Config
 public class IOSubsystem extends SubsystemBase {
     private final CachingDcMotorEx slider1;
 
@@ -34,14 +37,13 @@ public class IOSubsystem extends SubsystemBase {
 
     private final CachingServo arm2;
 
-    private final DcMotorEx enc;
+    private final CachingDcMotorEx enc;
 
     private final CachingServo Diffy2;
     public enum IO_STAGE {
         INTAKE,
         OUTTAKE,
         OUTTAKE_UNLOADING,
-        INTAKE_LOADING
     }
 
     public IO_STAGE stage = IO_STAGE.INTAKE;
@@ -59,15 +61,15 @@ public class IOSubsystem extends SubsystemBase {
     private double kD2 = 0.0003;
 
 
-    private double kP = 0.001;
-    private double kI = 0;
-    private double kD = 0.0001;
-    public double kF = 0.25;
+    public static double kP = 0.00135;
+    public static double kI = 0;
+    public static double kD = 0.00014;
+    public static double kF = 0.1;
 
-    public boolean HoldPosition = false;
+    public double HoldPosition = 0;
 
 
-    private double currentDiffyYaw = 90;
+    public double currentDiffyYaw = 90;
     private double currentDiffyPitch = 90;
     private double currentDiffy1Position = 0.5;
     private double currentDiffy2Position = 0.5;
@@ -78,16 +80,18 @@ public class IOSubsystem extends SubsystemBase {
 
     double targetAngle = 0;
 
+    double lastAngle = 0;
+
     double targetSlider = 0;
 
-    public double GRIPPING = 0.24;
-    public double NOT_GRIPPING = 0;
-    public double PLACING_SAMPLE = 0.4;
-    public double LOADING_SAMPLE = 0.48;
+    public double GRIPPING = 0.68;
+    public double NOT_GRIPPING = 1;
+    public double PLACING_SAMPLE = 0.38;
+    public double LOADING_SAMPLE = 0.40;
     public double LOADING_SPECIMEN = 0.6;
 
-    public double ARM_INIT = 0.1;
-    public double PITCH_TAKING_SAMPLE = 0;
+    public double ARM_INIT = 0.4;
+    public double PITCH_TAKING_SAMPLE = -25;
 
 
     public IOSubsystem(final HardwareMap hMap) {
@@ -96,30 +100,44 @@ public class IOSubsystem extends SubsystemBase {
         slider1 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldSt"));
         slider2 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldDr"));
         MoveAndDestroy = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "angle"));
-        enc = hMap.get(DcMotorEx.class, "feed");
+        enc = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "feed"));
         Diffy1 = new CachingServo(hMap.get(Servo.class, "difL"));
         Diffy2 = new CachingServo(hMap.get(Servo.class, "difD"));
         arm = new CachingServo(hMap.get(Servo.class, "arm"));
         arm2 = new CachingServo(hMap.get(Servo.class, "armX"));
         gripper = new CachingServo(hMap.get(Servo.class, "grip"));
 
-
-        slider1.setDirection(DcMotorSimple.Direction.REVERSE);
-        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
         Diffy2.setDirection(Servo.Direction.REVERSE);
         arm2.setDirection(Servo.Direction.REVERSE);
         enc.setDirection(DcMotorSimple.Direction.FORWARD);
+        slider1.setDirection(DcMotorSimple.Direction.REVERSE);
+        gripper.setDirection(Servo.Direction.REVERSE);
 
+        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         slider1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slider2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        enc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        MoveAndDestroy.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void setSliderPower(double power) {
          slider1.setPower(power);
          slider2.setPower(power);
+    }
+
+    public void DiffyLeft(double pos) {
+        Diffy1.setPosition(pos);
+    }
+
+    public void DiffyRight(double pos) {
+        Diffy2.setPosition(pos);
+    }
+
+    public void setPid(double kP, double kI, double kD)
+    {
+        anglePID.setPID(kP, kI, kD);
     }
 
 
@@ -133,9 +151,12 @@ public class IOSubsystem extends SubsystemBase {
                 getAngleMeasurement(), targetAngle
         );
 
-        double ff = targetAngle <= 10 ? 0 : (HoldPosition == false ? (Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)) * kF) : 0.2);
+        double ff = targetAngle <= 50 ? 0 : (HoldPosition == 0 ? (Math.cos(Math.toRadians(targetAngle / ticks_in_degrees)) * kF) : HoldPosition);
 
-        setAnglePower(output + ff);
+        double finalPower = output + ff;
+
+        setAnglePower(finalPower*finalPower*finalPower);
+
     }
 
     public void updatePosition() {
@@ -152,8 +173,17 @@ public class IOSubsystem extends SubsystemBase {
     }
 
     public void setArmPosition(double pos) {
-        arm.setPosition(pos+0.01);
+        arm.setPosition(pos+0.001);
         arm2.setPosition(pos);
+    }
+
+    public void diffyTest(double desiredPitch, double desiredRoll)
+    {
+        double actualDegrees1 = desiredPitch + (desiredRoll/2);
+        double actualDegrees2 = desiredPitch - (desiredRoll/2);
+
+        Diffy1.setPosition(actualDegrees1 * TICK_PER_DEGREE);
+        Diffy2.setPosition(actualDegrees2 * TICK_PER_DEGREE);
     }
 
     public void setGripperState(double pos) {
@@ -225,12 +255,13 @@ public class IOSubsystem extends SubsystemBase {
 
     public double getAngleMeasurement()
     {
-        return enc.getCurrentPosition();
+        return -enc.getCurrentPosition();
     }
 
     public void setAnglePower(double power)
     {
         MoveAndDestroy.setPower(power);
+        enc.setPower(power);
     }
 
     public double getSliderPosition()

@@ -59,10 +59,10 @@ import org.firstinspires.ftc.teamcode.Subsystems.IOSubsystem;
 public class ValueSetter extends OpMode
 {
     // Declare OpMode members.
-    public static double kP = 0.001;
+    public static double kP = 0.0013;
     public static double kI = 0;
-    public static double kD = 0.0001;
-    public static double kF = 0.25;
+    public static double kD = 0.00014;
+    public static double kF = 0.1;
 
     public static double kP2 = 0.017;
     public static double kI2 = 0;
@@ -101,8 +101,9 @@ public class ValueSetter extends OpMode
 
         IO = new IOSubsystem(hardwareMap);
 
-        IO.initDiffy();
 
+
+//        IO.initDiffy();
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -258,6 +259,9 @@ public class ValueSetter extends OpMode
 
     public static double targetAngle = 0;
 
+
+
+
     /*
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
      */
@@ -281,12 +285,28 @@ public class ValueSetter extends OpMode
 
         double powerF2 = output2;
 
-        IO.setSliderPower(output2);
-        IO.setArmPosition(IO.LOADING_SAMPLE);
-        IO.setDiffyPitch(90);
-        IO.setDiffyYaw(90);
+//        IO.setSliderPower(output2);
+//        IO.setArmPosition(IO.LOADING_SAMPLE);
+//        IO.setDiffyPitch(90);
+//        IO.setDiffyYaw(90);
 
-//        IO.setSlidersPower(output2);
+
+//        IO.setPid(kP, kI, kD);
+//
+//        IO.setAngleTarget(targetAngle);
+//        IO.updateAngle();
+//
+//        IO.setDiffyPitch(PitchPos);
+//        IO.setDiffyYaw(YawPos);
+//
+
+        IO.setDiffyPitch(GRIPPER);
+        IO.setArmPosition(ARM_POS);
+
+
+//        IO.setGripperState(GRIPPER);
+
+
 
         telemetryA.addData("currentAnglePosition", IO.getAngleMeasurement());
         telemetryA.addData("angleTarget", targetAngle);
