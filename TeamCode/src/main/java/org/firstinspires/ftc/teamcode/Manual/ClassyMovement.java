@@ -154,7 +154,7 @@ public class ClassyMovement extends CommandOpMode {
                                 new InstantCommand(() -> IO.setSliderTarget(1000)),
                                 new WaitUntilCommand(() -> IO.getSliderPosition() >= 700),
                                 new InstantCommand(() -> {
-                                    IO.setArmPosition(IO.LOADING_SAMPLE-0.05);
+                                    IO.setArmPosition(IO.LOADING_SAMPLE);
                                     IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                                 })
                     )

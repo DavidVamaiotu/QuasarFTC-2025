@@ -75,6 +75,7 @@ public class AutonomieDreapta extends CommandOpMode {
 
         follower.setMaxPower(0.8);
 
+        // pozitie highBar
 
         highBar = follower.pathBuilder()
                 .addPath(
@@ -86,6 +87,9 @@ public class AutonomieDreapta extends CommandOpMode {
                 .setPathEndTimeoutConstraint(250)
                 .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
                 .build();
+
+
+        // pozitia primului element
 
         firstElement = follower.pathBuilder()
                 .addPath(
@@ -100,6 +104,12 @@ public class AutonomieDreapta extends CommandOpMode {
 
 
 //        IO.setArmPosition(IO.ARM_INIT-0.35);
+
+
+        // SLIDERUL MERGE DE LA 0 LA 1850 tick-uri
+        // UNGHIUL SLIDERULUI MERGE DE LA 0 la 2100 de tick-uri
+        // DIFFYPITCH se refera la miscarea sus jos a gripper-ului
+        // DIFFYYAW se refera la rotatia gripper-ului
 
 
         schedule(
@@ -134,12 +144,12 @@ public class AutonomieDreapta extends CommandOpMode {
                         new WaitCommand(450),
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                         new InstantCommand(() -> IO.setDiffyPitch(180)),
-                        new FollowPathCommand(follower, firstElement),
+                        new FollowPathCommand(follower, firstElement), // se duce la primul element
                         new InstantCommand(() -> IO.setSliderTarget(500)),
                         new InstantCommand(() -> IO.setDiffyPitch(0)),
                         new WaitUntilCommand(() -> IO.getSliderPosition() >= 400),
                         new WaitCommand(150),
-                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.06)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.11)),
                         new WaitCommand(200),
                         new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                         new WaitCommand(200),
@@ -184,7 +194,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new InstantCommand(() -> IO.setDiffyYaw(45)),
                                 new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
                                 new WaitCommand(500),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.06)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.11)),
                                 new WaitCommand(200),
                                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                                 new WaitCommand(200)
@@ -232,7 +242,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new InstantCommand(() -> IO.setDiffyYaw(20)),
                                 new WaitUntilCommand(() -> IO.getSliderPosition() >= 1000),
                                 new WaitCommand(500),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.06)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.11)),
                                 new WaitCommand(200),
                                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                                 new WaitCommand(200)
