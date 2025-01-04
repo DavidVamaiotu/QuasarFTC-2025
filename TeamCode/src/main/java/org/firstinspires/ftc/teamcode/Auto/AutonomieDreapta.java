@@ -95,7 +95,7 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(31, 65, Point.CARTESIAN),
-                                new Point(23, 24, Point.CARTESIAN)
+                                new Point(23, 23, Point.CARTESIAN)
                         )
                 )
                 .setPathEndTimeoutConstraint(200) // cat timp sta sa se corecteze robotul
@@ -131,7 +131,7 @@ public class AutonomieDreapta extends CommandOpMode {
                             )
                         ),
                         new InstantCommand(() -> IO.HoldPosition = 0.5),
-                        new InstantCommand(() -> follower.setMaxPower(1)),
+                        new InstantCommand(() -> follower.setMaxPower(0.8)),
                         new InstantCommand(() -> IO.setSliderTarget(900)),
                         new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
@@ -145,20 +145,20 @@ public class AutonomieDreapta extends CommandOpMode {
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                         new InstantCommand(() -> IO.setDiffyPitch(180)),
                         new FollowPathCommand(follower, firstElement), // se duce la primul element
-                        new InstantCommand(() -> IO.setSliderTarget(500)),
+                        new InstantCommand(() -> IO.setSliderTarget(550)),
                         new InstantCommand(() -> IO.setDiffyPitch(0)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 400),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 500),
                         new WaitCommand(150),
-                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.11)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.12)),
                         new WaitCommand(200),
                         new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
-                        new WaitCommand(200),
+                        new WaitCommand(350),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(follower, follower.pathBuilder() // se roteste pe loc sa puna piesa
                                         .addPath(
                                                 new BezierLine(
-                                                        new Point(23, 24, Point.CARTESIAN),
-                                                        new Point(23, 25, Point.CARTESIAN)
+                                                        new Point(23, 23, Point.CARTESIAN),
+                                                        new Point(23, 24, Point.CARTESIAN)
                                                 )
                                         )
                                         .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(15))
@@ -168,6 +168,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new InstantCommand(() -> IO.setSliderTarget(0)),
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.2)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
                                         new InstantCommand(() -> IO.setDiffyPitch(120)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new WaitCommand(150),
@@ -180,11 +181,11 @@ public class AutonomieDreapta extends CommandOpMode {
                         new FollowPathCommand(follower, follower.pathBuilder() // se roteste la a doua piesa
                                 .addPath(
                                         new BezierLine(
-                                                new Point(23, 25, Point.CARTESIAN),
-                                                new Point(23, 24, Point.CARTESIAN)
+                                                new Point(23, 24, Point.CARTESIAN),
+                                                new Point(23, 23, Point.CARTESIAN)
                                         )
                                 )
-                                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-25))
+                                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-23))
                                 .build()
                         ),
                         new SequentialCommandGroup(
@@ -192,20 +193,19 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new InstantCommand(() -> IO.setSliderTarget(750)),
                                 new InstantCommand(() -> IO.setDiffyPitch(0)),
                                 new InstantCommand(() -> IO.setDiffyYaw(45)),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 600),
                                 new WaitCommand(500),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.11)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.12)),
                                 new WaitCommand(200),
                                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
-                                new WaitCommand(200)
-
+                                new WaitCommand(350)
                         ),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a doua piesa
                                         .addPath(
                                                 new BezierLine(
-                                                        new Point(23, 24, Point.CARTESIAN),
-                                                        new Point(23, 25, Point.CARTESIAN)
+                                                        new Point(23, 23, Point.CARTESIAN),
+                                                        new Point(23, 24, Point.CARTESIAN)
                                                 )
                                         )
                                         .setLinearHeadingInterpolation(Math.toRadians(-25), Math.toRadians(15))
@@ -223,55 +223,63 @@ public class AutonomieDreapta extends CommandOpMode {
                                 )
                         ),
                         new WaitCommand(250),
-                        new InstantCommand(() -> IO.setAngleTarget(0)),
-                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
-                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste la a treia piesa
+                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a treia piesa
+                                    .addPath(
+                                            new BezierLine(
+                                                    new Point(23, 24, Point.CARTESIAN),
+                                                    new Point(16.149532710280372, 33.21495327102804, Point.CARTESIAN)
+                                            )
+                                    )
+                                    .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(180))
+                                    .build()
+                            )
+                            .alongWith(
+                                    new SequentialCommandGroup(
+                                            new InstantCommand(() -> IO.setAngleTarget(0)),
+                                            new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.25)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(0))
+                                    )
+                            ),
+                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a treia piesa
                                 .addPath(
                                         new BezierLine(
-                                                new Point(23, 25, Point.CARTESIAN),
-                                                new Point(23, 24, Point.CARTESIAN)
+                                                new Point(16.149532710280372, 33.21495327102804, Point.CARTESIAN),
+                                                new Point(9.5, 33.21495327102804, Point.CARTESIAN)
                                         )
                                 )
-                                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-40))
+                                .setPathEndTimeoutConstraint(50)
+                                .setPathEndTValueConstraint(0.97)
+                                .setConstantHeadingInterpolation(Math.toRadians(180))
                                 .build()
                         ),
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
-                                new InstantCommand(() -> IO.setSliderTarget(1100)),
-                                new InstantCommand(() -> IO.setDiffyPitch(0)),
-                                new InstantCommand(() -> IO.setDiffyYaw(20)),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 1000),
-                                new WaitCommand(500),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.11)),
-                                new WaitCommand(200),
-                                new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
-                                new WaitCommand(200)
-
-                        ),
-                        new ParallelCommandGroup(
-                                new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a treia piesa
-                                        .addPath(
-                                                new BezierLine(
-                                                        new Point(23, 25, Point.CARTESIAN),
-                                                        new Point(23, 24, Point.CARTESIAN)
-                                                )
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(300),
+                        new InstantCommand(() -> IO.setDiffyPitch(150)),
+                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                        new FollowPathCommand(follower, follower.pathBuilder()
+                                .addPath(
+                                        new BezierLine(
+                                                new Point(9.5, 33.21495327102804, Point.CARTESIAN),
+                                                new Point(31, 67, Point.CARTESIAN)
                                         )
-                                        .setLinearHeadingInterpolation(Math.toRadians(-40), Math.toRadians(15))
-                                        .build()
-                                ),
-                                new SequentialCommandGroup(
-                                        new InstantCommand(() -> IO.setSliderTarget(0)),
-                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.2)),
-                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(120)),
-                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
-                                        new WaitCommand(150),
-                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING))
                                 )
-                        )
-
-
+                                .setPathEndTimeoutConstraint(50)
+                                .setConstantHeadingInterpolation(Math.toRadians(180))
+                                .build()
+                        ),
+                        new InstantCommand(() -> IO.setSliderTarget(900)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
+                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                        new InstantCommand(() -> IO.HoldPosition = 0),
+                        new WaitCommand(250),
+                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
+                        new InstantCommand(() -> IO.setAngleTarget(0)),
+                        new WaitCommand(450),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                        new InstantCommand(() -> IO.setDiffyPitch(180))
 
                 )
         );

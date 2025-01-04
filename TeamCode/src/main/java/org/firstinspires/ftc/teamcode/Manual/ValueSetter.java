@@ -102,8 +102,7 @@ public class ValueSetter extends OpMode
         IO = new IOSubsystem(hardwareMap);
 
 
-
-//        IO.initDiffy();
+        IO.initDiffy();
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -281,9 +280,9 @@ public class ValueSetter extends OpMode
 //        IO.setDiffyYaw(YawPos);
 //        IO.setDiffyPitch(PitchPos);
 
-        double powerF = output + ff;
-
-        double powerF2 = output2;
+//        double powerF = output + ff;
+//
+//        double powerF2 = output2;
 
 //        IO.setSliderPower(output2);
 //        IO.setArmPosition(IO.LOADING_SAMPLE);
@@ -295,13 +294,19 @@ public class ValueSetter extends OpMode
 //
 //        IO.setAngleTarget(targetAngle);
 //        IO.updateAngle();
+
+
+//        IO.setArmPosition(0.3);
+
+        IO.setArmPosition(ARM_POS);
+        IO.setDiffyPitch(PitchPos);
 //
 //        IO.setDiffyPitch(PitchPos);
 //        IO.setDiffyYaw(YawPos);
 //
 
-        IO.setDiffyPitch(GRIPPER);
-        IO.setArmPosition(ARM_POS);
+//        IO.setDiffyPitch(GRIPPER);
+//        IO.setArmPosition(ARM_POS);
 
 
 //        IO.setGripperState(GRIPPER);

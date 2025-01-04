@@ -61,7 +61,7 @@ public class IOSubsystem extends SubsystemBase {
     private double kD2 = 0.0003;
 
 
-    public static double kP = 0.00135;
+    public static double kP = 0.00139;
     public static double kI = 0;
     public static double kD = 0.00014;
     public static double kF = 0.1;
@@ -84,13 +84,13 @@ public class IOSubsystem extends SubsystemBase {
 
     double targetSlider = 0;
 
-    public double GRIPPING = 0.68;
-    public double NOT_GRIPPING = 1;
+    public double GRIPPING = 0.3;
+    public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.38;
-    public double LOADING_SAMPLE = 0.35;
+    public double LOADING_SAMPLE = 0.54;
     public double LOADING_SPECIMEN = 0.6;
 
-    public double ARM_INIT = 0.4;
+    public double ARM_INIT = 0.8;
     public double PITCH_TAKING_SAMPLE = -25;
 
 
@@ -109,9 +109,9 @@ public class IOSubsystem extends SubsystemBase {
 
         Diffy2.setDirection(Servo.Direction.REVERSE);
         arm2.setDirection(Servo.Direction.REVERSE);
-        enc.setDirection(DcMotorSimple.Direction.FORWARD);
+        enc.setDirection(DcMotorSimple.Direction.REVERSE);
         slider1.setDirection(DcMotorSimple.Direction.REVERSE);
-        gripper.setDirection(Servo.Direction.REVERSE);
+        gripper.setDirection(Servo.Direction.FORWARD);
 
         slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -176,6 +176,15 @@ public class IOSubsystem extends SubsystemBase {
         arm.setPosition(pos+0.001);
         arm2.setPosition(pos);
     }
+
+//    public void arm1(double pos) {
+//        arm.setPosition(pos);
+//    }
+//
+//    public void arm2(double pos) {
+//        arm2.setPosition(pos);
+//    }
+
 
     public void diffyTest(double desiredPitch, double desiredRoll)
     {
