@@ -21,6 +21,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -32,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Config
-@TeleOp(name = "ClassyMovement <3 (tudor & franci)")
+@TeleOp(name = "ClassyMovement (tudor & franci <3)")
 public class ClassyMovement extends CommandOpMode {
     private List<LynxModule> hubs;
 
@@ -88,6 +89,8 @@ public class ClassyMovement extends CommandOpMode {
                 new RunCommand(IO::updatePosition),
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
+                        new InstantCommand(() -> IO.setAngleTarget(0)),
+                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
                         new InstantCommand(IO::initDiffy),
                         new InstantCommand(() -> IO.setDiffyPitch(180)),
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT))
@@ -150,36 +153,43 @@ public class ClassyMovement extends CommandOpMode {
         new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.2)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .whenActive(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setSliderTarget(1000)),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 700),
-                                new InstantCommand(() -> {
-                                    IO.setArmPosition(IO.LOADING_SAMPLE);
-                                    IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
-                                })
-                    )
+                        new ConditionalCommand(
+                                new SequentialCommandGroup(
+                                    new InstantCommand(() -> IO.setSliderTarget(1000)),
+                                    new WaitUntilCommand(() -> IO.getSliderPosition() >= 700),
+                                    new InstantCommand(() -> {
+                                        IO.setArmPosition(IO.LOADING_SAMPLE);
+                                        IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                                    })
+                                ),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setSliderTarget(0))
+                                ),
+                                () -> (IO.getSliderPosition() <= 700)
+                        )
                 );
 
 
         driver2.getGamepadButton(GamepadKeys.Button.A)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(90); IO.setDiffyPitch(-25); });
+                .whenActive(() -> { IO.setDiffyYaw(90); IO.setDiffyPitch(0.05); });
 
         driver2.getGamepadButton(GamepadKeys.Button.X)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(45); IO.setDiffyPitch(-25); });
+                .whenActive(() -> { IO.setDiffyYaw(45); IO.setDiffyPitch(0.05);});
 
         driver2.getGamepadButton(GamepadKeys.Button.B)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(135); IO.setDiffyPitch(-25); });
+                .whenActive(() -> { IO.setDiffyYaw(135); IO.setDiffyPitch(0.05); });
 
         driver2.getGamepadButton(GamepadKeys.Button.Y)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(0); IO.setDiffyPitch(-25); });
+                .whenActive(() -> { IO.setDiffyYaw(180); IO.setDiffyPitch(0.05); });
 
 
 
@@ -193,7 +203,7 @@ public class ClassyMovement extends CommandOpMode {
 //                                IO.setDiffyYaw(IO.currentDiffyYaw + addedValue);
 //                                IO.setDiffyPitch(-25);
                                 IO.setDiffyYaw(ALLIANCE ? cam.GetDegreesBlue() : cam.GetDegreesRed());
-                                IO.setDiffyPitch(-30);
+                                IO.setDiffyPitch(0);
                             } catch(Exception ex) {
                                 telemetry.addLine("Not found");
                             }
@@ -201,63 +211,89 @@ public class ClassyMovement extends CommandOpMode {
                 )
                 .whenInactive(() -> cam.DisableRendering());
 
-        new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.2)
-                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
-                .whenActive(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setDiffyPitch(90)),
-                                new InstantCommand(() -> IO.setSliderTarget(0))
-                        )
-                );
+//        new Trigger(() -> driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.2)
+//                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
+//                .whenActive(
+//                        new SequentialCommandGroup(
+//                                new InstantCommand(() -> IO.setDiffyPitch(90)),
+//                                new InstantCommand(() -> IO.setSliderTarget(0))
+//                        )
+//                );
 
 
         new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.2)
-                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
+                .and(new Trigger(() -> IO.stage != IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING))
                 .whenActive(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> {
-                                    IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
-                                    IO.stage = IOSubsystem.IO_STAGE.OUTTAKE;
-                                    IO.setArmPosition(IO.ARM_INIT);
-                                    IO.setDiffyPitch(180);
-                                    IO.setDiffyYaw(90);
-                                    IO.setSliderTarget(0);
-                                }),
+                        new ConditionalCommand(
                                 new SequentialCommandGroup(
-                                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 20),
-                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1900),
-                                        new WaitCommand(350),
-                                        new InstantCommand(() -> IO.HoldPosition = 0.25)
-                                )
-//                                                .interruptOn(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE)
-                        )
-                );
-
-
-
-        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.2)
-                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE))
-                .whenActive(
-                        new SequentialCommandGroup(
-                                new InstantCommand(() -> {
-                                    IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
-                                    IO.stage = IOSubsystem.IO_STAGE.INTAKE;
-                                    IO.HoldPosition = 0;
-                                    IO.setDiffyPitch(90);
-                                    IO.setDiffyYaw(90);
-                                    IO.setAngleTarget(10);
-                                }),
-                                new SequentialCommandGroup(
-                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
                                         new InstantCommand(() -> {
-                                            IO.setArmPosition(IO.LOADING_SAMPLE);
-                                            IO.setGripperState(IO.NOT_GRIPPING);
-                                        })
-                                )
+                                            IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
+                                            IO.stage = IOSubsystem.IO_STAGE.OUTTAKE;
+                                            IO.setArmPosition(IO.ARM_INIT);
+                                            IO.setDiffyPitch(15);
+                                            IO.setDiffyYaw(90);
+                                            IO.setSliderTarget(0);
+                                        }),
+                                        new SequentialCommandGroup(
+                                                new WaitUntilCommand(() -> IO.getSliderPosition() <= 20),
+                                                new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1900),
+                                                new WaitCommand(350),
+                                                new InstantCommand(() -> IO.HoldPosition = 0.25)
+                                        )
+//                                                .interruptOn(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE)
+                                ),
+                                new SequentialCommandGroup(
+                                    new InstantCommand(() -> {
+                                        IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
+                                        IO.stage = IOSubsystem.IO_STAGE.INTAKE;
+                                        IO.HoldPosition = 0;
+                                        IO.setDiffyPitch(90);
+                                        IO.setDiffyYaw(90);
+                                    }),
+                                    new InstantCommand(() -> IO.setAngleTarget(900)),
+                                    new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                    new InstantCommand(() -> IO.setAngleTarget(100)),
+                                    new SequentialCommandGroup(
+                                            new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 150),
+                                            new InstantCommand(() -> {
+                                                IO.setArmPosition(IO.LOADING_SAMPLE);
+                                                IO.setGripperState(IO.NOT_GRIPPING);
+                                            })
+                                        )
 //                                                .interruptOn(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE)
+                                 ),
+                                () -> IO.stage == IOSubsystem.IO_STAGE.INTAKE
                         )
+
                 );
+
+
+
+//        new Trigger(() -> driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= 0.2)
+//                .and(new Trigger(() -> IO.stage != IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING))
+//                .whenActive(
+//                        new SequentialCommandGroup(
+//                                new InstantCommand(() -> {
+//                                    IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
+//                                    IO.stage = IOSubsystem.IO_STAGE.INTAKE;
+//                                    IO.HoldPosition = 0;
+//                                    IO.setDiffyPitch(90);
+//                                    IO.setDiffyYaw(90);
+//                                }),
+//                                new InstantCommand(() -> IO.setAngleTarget(900)),
+//                                new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+//                                new InstantCommand(() -> IO.setAngleTarget(100)),
+//                                new SequentialCommandGroup(
+//                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 150),
+//                                        new InstantCommand(() -> {
+//                                            IO.setArmPosition(IO.LOADING_SAMPLE);
+//                                            IO.setGripperState(IO.NOT_GRIPPING);
+//                                        })
+//                                )
+////                                                .interruptOn(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE)
+//                        )
+//                );
 
 
 
@@ -298,49 +334,58 @@ public class ClassyMovement extends CommandOpMode {
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> gamepad1.rumble(50)),
                                 new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
-                                new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                                new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE + 13)),
                                 new WaitCommand(100),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE+0.11)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
                                 new WaitCommand(100),
                                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
-                                new WaitCommand(150),
+                                new WaitCommand(250),
                                 new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE)),
-                                new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE+5))
+                                new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE))
                         )
                 );
 
         driver2.getGamepadButton(GamepadKeys.Button.Y)
-                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE || IO.stage == IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING))
-                .toggleWhenActive(
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE))
+                .and(new Trigger(() -> IO.specStage == IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED))
+                .whenActive(
                         new InstantCommand(() ->  {
+                            IO.stage = IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING;
                             IO.HoldPosition = 0.65;
                             IO.setSliderTarget(1850);
                             // fa sa miste bratul aici
-                            IO.setArmPosition(IO.PLACING_SAMPLE);
-                            IO.setDiffyPitch(120);
-                            IO.stage = IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING;
-                        }),
+                            IO.setArmPosition(IO.STRAIGHT-0.2);
+                            IO.setDiffyPitch(140);
+                        })
+                );
+
+
+        driver2.getGamepadButton(GamepadKeys.Button.X)
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING))
+                .whenActive(
                         new SequentialCommandGroup(
                                 // fa sa puna piesa aici
-                                new InstantCommand(() -> {
-                                    IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
-                                    IO.stage = IOSubsystem.IO_STAGE.INTAKE;
-                                }),
                                 new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                 new WaitCommand(350),
                                 new InstantCommand(() -> IO.setDiffyPitch(90)),
                                 new WaitCommand(50),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE+0.3)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> {
                                             IO.setSliderTarget(0);
-                                            IO.setDiffyPitch(180);
+                                            IO.setDiffyPitch(70);
                                             IO.setDiffyYaw(90);
                                         }),
                                         new WaitUntilCommand(() -> IO.getSliderPosition() <= 50),
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                                         new InstantCommand(() -> IO.HoldPosition = 0),
-                                        new InstantCommand(() -> IO.setAngleTarget(10))
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> {
+                                            IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
+                                            IO.stage = IOSubsystem.IO_STAGE.INTAKE;
+                                        })
 //                                        new SequentialCommandGroup(
 //                                              new WaitUntilCommand(() -> IO.getSliderPosition() <= 10),
 //                                              new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT))
@@ -351,20 +396,74 @@ public class ClassyMovement extends CommandOpMode {
                         )
                 );
 
+        driver2.getGamepadButton(GamepadKeys.Button.A)
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE))
+                .and(new Trigger(() -> IO.specStage == IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED))
+                        .whenActive(
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> {
+                                            IO.setArmPosition(IO.STRAIGHT-0.2);
+                                            IO.setDiffyPitch(140);
+                                        }),
+                                        new WaitCommand(100),
+                                        new InstantCommand(() -> {
+                                            IO.setGripperState(IO.NOT_GRIPPING);
+                                        }),
+                                        new WaitCommand(250),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.stage = IOSubsystem.IO_STAGE.INTAKE),
+                                        new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED)
+                                )
+                        );
+
         driver2.getGamepadButton(GamepadKeys.Button.X)
                 .and(new Trigger(() -> !driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .whenActive(
                         new SelectCommand(
                                 // the first parameter is a map of commands
                                 new HashMap<Object, Command>() {{
-                                    put(IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED, new InstantCommand(()-> telemetry.addLine("Test1")));
-                                    put(IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN, new InstantCommand(()-> telemetry.addLine("Test2")));
-                                    put(IOSubsystem.SPECIMEN_STAGE.PLACING_SPECIMEN, new InstantCommand(()-> telemetry.addLine("Test3")));
+                                    put(IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED, new SequentialCommandGroup(
+                                            new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT - 0.05)),
+                                            new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(60)),
+                                            new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN)
+                                    ));
+                                    put(IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN, new SequentialCommandGroup(
+                                            new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                                            new WaitCommand(250),
+                                            new InstantCommand(() -> IO.setDiffyPitch(100)),
+                                            new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                            new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                            new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                            new InstantCommand(() -> IO.setSliderTarget(300)),
+                                            new InstantCommand(() -> IO.HoldPosition = 0.3),
+                                            new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.PLACING_SPECIMEN)
+                                    ));
+                                    put(IOSubsystem.SPECIMEN_STAGE.PLACING_SPECIMEN, new SequentialCommandGroup(
+                                            new InstantCommand(() -> IO.setSliderTarget(700)),
+                                            new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                                            new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                            new WaitCommand(250),
+                                            new InstantCommand(() -> IO.setSliderTarget(0)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(100)),
+                                            new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                                            new WaitUntilCommand(() -> IO.getSliderPosition() <= 100),
+                                            new InstantCommand(() -> IO.setAngleTarget(900)),
+                                            new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                            new InstantCommand(() -> IO.setAngleTarget(100)),
+                                            new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED)
+                                    ));
                                 }},
                                 // the selector
                                 this::getSpecStage
                         )
                 );
+
+
 
         while(opModeInInit())
         {
@@ -374,7 +473,7 @@ public class ClassyMovement extends CommandOpMode {
             {
                 ALLIANCE = true;
             }
-            if (gamepad2.dpad_down)
+            if (gamepad1.dpad_down)
             {
                 ALLIANCE = false;
             }

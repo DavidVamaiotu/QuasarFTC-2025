@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.tuners_tests.pid;
+package org.firstinspires.ftc.teamcode.Auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -11,7 +11,9 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.pedropathing.follower.FollowerConstants;
+import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierCurve;
 import com.pedropathing.pathgen.PathBuilder;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.util.Constants;
@@ -24,6 +26,9 @@ import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.IOSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystems.commands.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
@@ -43,7 +48,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
  * @version 1.0, 3/12/2024
  */
 @Config
-@Autonomous (name = "AutonomieDreapta   ", group = "PIDF Tuning")
+@Autonomous (name = "AutonomieDreapta", group = "Auto")
 public class AutonomieDreapta extends CommandOpMode {
     private Telemetry telemetryA;
 
@@ -55,10 +60,47 @@ public class AutonomieDreapta extends CommandOpMode {
 
     private IOSubsystem IO;
 
-    private Pose startPose = new Pose(7.2, 59, Math.toRadians(0));
+    private Pose startPose = new Pose(7.1, 59, Math.toRadians(180));
 
-    private PathChain highBar;
-    private PathChain firstElement;
+    private GoBildaPinpointDriver odo;
+
+    private PathChain TohighBar;
+    private PathChain TofirstElement;
+
+    private PathChain FirstElementPlace;
+
+    private PathChain SecondElementPlace;
+
+    private PathChain ThirdElementPlace;
+
+    private PathChain ToSecondElement;
+
+    private PathChain ToThirdElement;
+
+    private PathChain ToSpecimenIntake;
+
+    private PathChain IntakeSpecimen;
+
+    private PathChain CycleToBar;
+
+    private PathChain CycleToBar2;
+
+    private PathChain CycleToBar3;
+
+    private PathChain CycleToBar4;
+
+    private PathChain CycleToSpecimen;
+
+    private PathChain CycleToSpecimen2;
+
+    private PathChain CycleToSpecimen3;
+
+    private Point highBar = new Point(30, 61.5, Point.CARTESIAN);
+
+    private Point specimenIntake = new Point(16.149532710280372, 33.21495327102804, Point.CARTESIAN);
+
+    private Point firstElement = new Point(23, 23, Point.CARTESIAN);
+
 
     /**
      * This initializes the Follower and creates the forward and backward Paths. Additionally, this
@@ -69,37 +111,213 @@ public class AutonomieDreapta extends CommandOpMode {
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
 
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"pin");
+
         IO = new IOSubsystem(hardwareMap);
 
-        follower.setStartingPose(startPose);
+        IO.resetEncoder();
 
-        follower.setMaxPower(0.8);
+        odo.setPosition(new Pose2D(DistanceUnit.INCH, startPose.getX(), startPose.getY(), AngleUnit.RADIANS, startPose.getHeading()));
+//
+//        follower.setStartingPose(startPose);
+
+//        follower.setMaxPower(0.8);
 
         // pozitie highBar
 
-        highBar = follower.pathBuilder()
+        TohighBar = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
                                 new Point(startPose.getX(), startPose.getY(), Point.CARTESIAN),
-                                new Point(31, 65, Point.CARTESIAN)
+                                highBar
                         )
                 )
-                .setPathEndTimeoutConstraint(250)
-                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(180))
+                .setPathEndTimeoutConstraint(100)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
                 .build();
 
 
         // pozitia primului element
 
-        firstElement = follower.pathBuilder()
+        TofirstElement = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(31, 65, Point.CARTESIAN),
-                                new Point(23, 23, Point.CARTESIAN)
+                                highBar,
+                                firstElement
                         )
                 )
-                .setPathEndTimeoutConstraint(200) // cat timp sta sa se corecteze robotul
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setPathEndTValueConstraint(0.97)
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        ToSecondElement = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN),
+                                firstElement
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-25)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+        ToThirdElement = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN),
+                                firstElement
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-48)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        FirstElementPlace = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                firstElement,
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(15)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        SecondElementPlace = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                firstElement,
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(-25), Math.toRadians(15)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        ThirdElementPlace = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                firstElement,
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(-48), Math.toRadians(15)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        ToSpecimenIntake = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN),
+                                specimenIntake
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        IntakeSpecimen = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(firstElement.getX(), firstElement.getY()+1, Point.CARTESIAN),
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.95)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        CycleToBar = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN),
+                                new Point(26.019, 55.626, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 4, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        CycleToSpecimen = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(highBar.getX(), highBar.getY() + 4, Point.CARTESIAN),
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        CycleToSpecimen2 = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(highBar.getX(), highBar.getY() + 7, Point.CARTESIAN),
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        CycleToBar2 = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN),
+                                new Point(26.019, 55.626, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 7, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        CycleToBar3 = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN),
+                                new Point(26.019, 55.626, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 9, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        CycleToSpecimen3 = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(highBar.getX(), highBar.getY() + 9, Point.CARTESIAN),
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+        CycleToBar4 = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                new Point(specimenIntake.getX() - 6.1, specimenIntake.getY(), Point.CARTESIAN),
+                                new Point(26.019, 55.626, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 11, Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(50)
+                .setPathEndTValueConstraint(0.97)// cat timp sta sa se corecteze robotul
+                .setConstantHeadingInterpolation(Math.toRadians(180)) // unghiul cu care porneste si cel cu care termina
                 .build();
 
 
@@ -113,174 +331,283 @@ public class AutonomieDreapta extends CommandOpMode {
 
 
         schedule(
-                new RunCommand(follower::update),
                 new RunCommand(IO::updatePosition),
                 new RunCommand(IO::updateAngle),
+                new RunCommand(follower::update),
                 new InstantCommand(IO::initDiffy),
-                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT-0.2)),
+                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT+0.05)),
                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
-                        new FollowPathCommand(follower, highBar)
-                        .alongWith(
-                            new SequentialCommandGroup(
-                                    new WaitCommand(800),
-                                    new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                    new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
-                                    new InstantCommand(() -> IO.setDiffyPitch(150))
-                            )
-                        ),
-                        new InstantCommand(() -> IO.HoldPosition = 0.5),
-                        new InstantCommand(() -> follower.setMaxPower(0.8)),
-                        new InstantCommand(() -> IO.setSliderTarget(900)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
+                        new FollowPathCommand(follower, TohighBar)
+                                .alongWith(
+                                        new SequentialCommandGroup(
+                                                new WaitCommand(400),
+                                                new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                                new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1700),
+                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.HoldPosition = 0.5)
+                                        )
+                                ),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 250),
+//                        new InstantCommand(() -> IO.HoldPosition = 0.5),b jgmbf ed43ew2
+                        new InstantCommand(() -> IO.setSliderTarget(700)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
                         new InstantCommand(() -> IO.setSliderTarget(0)),
                         new InstantCommand(() -> IO.setArmPosition(0.5)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
-                        new InstantCommand(() -> IO.setAngleTarget(0)),
-                        new WaitCommand(450),
-                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
-                        new InstantCommand(() -> IO.setDiffyPitch(180)),
-                        new FollowPathCommand(follower, firstElement), // se duce la primul element
-                        new InstantCommand(() -> IO.setSliderTarget(550)),
-                        new InstantCommand(() -> IO.setDiffyPitch(0)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 500),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, TofirstElement),
+                                new SequentialCommandGroup(
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new WaitCommand(250),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(180))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setSliderTarget(500)),
+                        new InstantCommand(() -> {
+                            IO.setArmPosition(IO.LOADING_SAMPLE);
+                            IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                        }),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 450),
+                        new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
                         new WaitCommand(150),
-                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.12)),
-                        new WaitCommand(200),
                         new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                         new WaitCommand(350),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(follower, follower.pathBuilder() // se roteste pe loc sa puna piesa
-                                        .addPath(
-                                                new BezierLine(
-                                                        new Point(23, 23, Point.CARTESIAN),
-                                                        new Point(23, 24, Point.CARTESIAN)
-                                                )
-                                        )
-                                        .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(15))
-                                        .build()
-                                ),
+                                new FollowPathCommand(follower, FirstElementPlace),
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setSliderTarget(0)),
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.2)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(120)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(190)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
-                                        new WaitCommand(150),
                                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING))
                                 )
                         ),
                         new WaitCommand(250),
-                        new InstantCommand(() -> IO.setAngleTarget(0)),
-                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
-                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste la a doua piesa
-                                .addPath(
-                                        new BezierLine(
-                                                new Point(23, 24, Point.CARTESIAN),
-                                                new Point(23, 23, Point.CARTESIAN)
-                                        )
-                                )
-                                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-23))
-                                .build()
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50)
+                                ),
+                                new FollowPathCommand(follower, ToSecondElement)
                         ),
                         new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
-                                new InstantCommand(() -> IO.setSliderTarget(750)),
-                                new InstantCommand(() -> IO.setDiffyPitch(0)),
-                                new InstantCommand(() -> IO.setDiffyYaw(45)),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 600),
-                                new WaitCommand(500),
-                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE + 0.12)),
-                                new WaitCommand(200),
+                                new InstantCommand(() -> IO.setSliderTarget(700)),
+                                new InstantCommand(() -> {
+                                    IO.setArmPosition(IO.LOADING_SAMPLE);
+                                    IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                                    IO.setDiffyYaw(45);
+                                }),
+                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                                new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
+                                new WaitCommand(150),
                                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
-                                new WaitCommand(350)
+                                new WaitCommand(250)
                         ),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a doua piesa
-                                        .addPath(
-                                                new BezierLine(
-                                                        new Point(23, 23, Point.CARTESIAN),
-                                                        new Point(23, 24, Point.CARTESIAN)
-                                                )
-                                        )
-                                        .setLinearHeadingInterpolation(Math.toRadians(-25), Math.toRadians(15))
-                                        .build()
-                                ),
+                                new FollowPathCommand(follower, SecondElementPlace),
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setSliderTarget(0)),
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.2)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(120)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(190)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
-                                        new WaitCommand(150),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING))
+                                )
+                        ),
+                        new WaitCommand(300),
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50)
+                                ),
+                                new FollowPathCommand(follower, ToThirdElement)
+                        ),
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> IO.setSliderTarget(1100)),
+                                new InstantCommand(() -> {
+                                    IO.setArmPosition(IO.LOADING_SAMPLE);
+                                    IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                                    IO.setDiffyYaw(20);
+                                }),
+                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 1050),
+                                new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                                new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
+                                new WaitCommand(150),
+                                new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                                new WaitCommand(250)
+                        ),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, ThirdElementPlace),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(190)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING))
                                 )
                         ),
                         new WaitCommand(250),
-                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a treia piesa
-                                    .addPath(
-                                            new BezierLine(
-                                                    new Point(23, 24, Point.CARTESIAN),
-                                                    new Point(16.149532710280372, 33.21495327102804, Point.CARTESIAN)
-                                            )
-                                    )
-                                    .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(180))
-                                    .build()
-                            )
+                        new FollowPathCommand(follower, IntakeSpecimen)
                             .alongWith(
                                     new SequentialCommandGroup(
-                                            new InstantCommand(() -> IO.setAngleTarget(0)),
-                                            new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.25)),
-                                            new InstantCommand(() -> IO.setDiffyPitch(0))
+                                            new InstantCommand(() -> IO.setAngleTarget(900)),
+                                            new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                            new InstantCommand(() -> IO.setAngleTarget(100)),
+                                            new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT - 0.05)),
+                                            new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(70))
                                     )
                             ),
-                        new FollowPathCommand(follower, follower.pathBuilder() // se roteste sa puna a treia piesa
-                                .addPath(
-                                        new BezierLine(
-                                                new Point(16.149532710280372, 33.21495327102804, Point.CARTESIAN),
-                                                new Point(9.5, 33.21495327102804, Point.CARTESIAN)
-                                        )
-                                )
-                                .setPathEndTimeoutConstraint(50)
-                                .setPathEndTValueConstraint(0.97)
-                                .setConstantHeadingInterpolation(Math.toRadians(180))
-                                .build()
-                        ),
                         new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                         new WaitCommand(300),
-                        new InstantCommand(() -> IO.setDiffyPitch(150)),
+                        new InstantCommand(() -> IO.setDiffyPitch(90)),
                         new InstantCommand(() -> IO.setAngleTarget(2100)),
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
-                        new FollowPathCommand(follower, follower.pathBuilder()
-                                .addPath(
-                                        new BezierLine(
-                                                new Point(9.5, 33.21495327102804, Point.CARTESIAN),
-                                                new Point(31, 67, Point.CARTESIAN)
-                                        )
+                        new FollowPathCommand(follower, CycleToBar)
+                                .alongWith(
+                                new SequentialCommandGroup(
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                        new InstantCommand(() -> IO.setSliderTarget(300)),
+                                        new InstantCommand(() -> IO.HoldPosition = 0.3)
+
                                 )
-                                .setPathEndTimeoutConstraint(50)
-                                .setConstantHeadingInterpolation(Math.toRadians(180))
-                                .build()
                         ),
-                        new InstantCommand(() -> IO.setSliderTarget(900)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
+                        new InstantCommand(() -> IO.setSliderTarget(700)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
                         new InstantCommand(() -> IO.setSliderTarget(0)),
                         new InstantCommand(() -> IO.setArmPosition(0.5)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
-                        new InstantCommand(() -> IO.setAngleTarget(0)),
-                        new WaitCommand(450),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, CycleToSpecimen),
+                                new SequentialCommandGroup(
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT - 0.05)),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(70))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(300),
+                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                        new InstantCommand(() -> IO.setAngleTarget(2100)),
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
-                        new InstantCommand(() -> IO.setDiffyPitch(180))
+                        new FollowPathCommand(follower, CycleToBar2)
+                                .alongWith(
+                                        new SequentialCommandGroup(
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                                new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.HoldPosition = 0.3)
 
+                                        )
+                                ),
+                        new InstantCommand(() -> IO.setSliderTarget(700)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                        new InstantCommand(() -> IO.HoldPosition = 0),
+                        new WaitCommand(250),
+                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, CycleToSpecimen2),
+                                new SequentialCommandGroup(
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT - 0.05)),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(70))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(300),
+                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                        new FollowPathCommand(follower, CycleToBar3)
+                                .alongWith(
+                                        new SequentialCommandGroup(
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                                new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.HoldPosition = 0.3)
+
+                                        )
+                                ),
+                        new InstantCommand(() -> IO.setSliderTarget(700)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                        new InstantCommand(() -> IO.HoldPosition = 0),
+                        new WaitCommand(250),
+                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, CycleToSpecimen3),
+                                new SequentialCommandGroup(
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT - 0.05)),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(70))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(300),
+                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                        new FollowPathCommand(follower, CycleToBar4)
+                                .alongWith(
+                                        new SequentialCommandGroup(
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                                new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.HoldPosition = 0.3)
+
+                                        )
+                                ),
+                        new InstantCommand(() -> IO.setSliderTarget(700)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                        new InstantCommand(() -> IO.HoldPosition = 0),
+                        new WaitCommand(250),
+                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300)
                 )
         );
 

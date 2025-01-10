@@ -1,377 +1,420 @@
-//package org.firstinspires.ftc.teamcode.Auto;
-//
-//import com.acmerobotics.dashboard.FtcDashboard;
-//import com.acmerobotics.dashboard.config.Config;
-//import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-//import com.arcrobotics.ftclib.command.InstantCommand;
-//import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-//import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-//import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-//
-//
-//import com.arcrobotics.ftclib.command.CommandOpMode;
-//import com.arcrobotics.ftclib.command.RunCommand;
-//import com.arcrobotics.ftclib.command.WaitCommand;
-//import com.arcrobotics.ftclib.command.WaitUntilCommand;
-//
-//import org.firstinspires.ftc.teamcode.Subsystems.IntakeSubsystem;
-//import org.firstinspires.ftc.teamcode.Subsystems.OuttakeSubsystem;
-//import org.firstinspires.ftc.teamcode.Subsystems.commands.FollowPathCommand;
-//
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
-//import org.firstinspires.ftc.teamcode.pedroPathing.follower.Follower;
-//import org.firstinspires.ftc.teamcode.pedroPathing.localization.Pose;
-//import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.BezierLine;
-//import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathBuilder;
-//import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.PathChain;
-//import org.firstinspires.ftc.teamcode.pedroPathing.pathGeneration.Point;
-//
-//
-//@Config
-//@Autonomous (name = "AutonomieStanga", group = "Autonomous")
-//public class AutonomieStanga extends CommandOpMode {
-//    private Telemetry telemetryA;
-//
-//    public static double RADIUS = 10;
-//
-//    private Follower follower;
-//
-//    private IntakeSubsystem intake;
-//    private OuttakeSubsystem outtake;
-//    public static double SliderPosition = 0.68;
-//
-//    private PathBuilder circle;
-//
-//    private PathBuilder circle2;
-//
-//    private Pose startPose = new Pose(7.2, 83.983, Math.toRadians(180));
-//
-//
-//    private Point highBarPos = new Point(30.08785046728972, 76.22429906542055, Point.CARTESIAN);
-//
-//    private Point firstElementPos = new Point(22.206, 119.7, Point.CARTESIAN);
-//
-//    private Point secondElementPos =  new Point(22.206, 129, Point.CARTESIAN);
-//
-//    private Point thirdElementPos = new Point(44.5, 123.9, Point.CARTESIAN);
-//
-//    private Point basket = new Point(14.552, 126.778, Point.CARTESIAN);
-//
-//    private PathChain highBar;
-//
-//    private PathChain firstElement;
-//
-//    private PathChain firstToBasket;
-//
-//    private PathChain basketToSecond;
-//
-//    private PathChain secondToBasket;
-//
-//    private PathChain basketToThird;
-//
-//    private PathChain thirdToBasket;
-//
-//    /**
-//     * This initializes the Follower and creates the PathChain for the "circle". Additionally, this
-//     * initializes the FTC Dashboard telemetry.
-//     */
-//    @Override
-//    public void initialize() {
-//
-//        highBar = new PathBuilder()
-//                .addPath(
-//                        new BezierLine(
-//                                new Point(startPose.getX(), startPose.getY(), Point.CARTESIAN),
-//                                highBarPos
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(200)
-//                .setConstantHeadingInterpolation(Math.toRadians(180)).build();
-//
-//        firstElement = new PathBuilder()
-//                .addPath(
-//                        // Line 3
-//                        new BezierLine(
-//                                highBarPos,
-//                                firstElementPos
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(200)
-//                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0)).build();
-//
-//
-//        firstToBasket = new PathBuilder()
-//                .addPath(
-//                        // Line 3
-//                        new BezierLine(
-//                                firstElementPos,
-//                                basket
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(200)
-//                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45)).build();
-//
-//
-//        basketToSecond = new PathBuilder()
-//                .addPath(
-//                        // Line 3
-//                        new BezierLine(
-//                                basket,
-//                                secondElementPos
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(200)
-//                .setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(0)).build();
-//
-//        secondToBasket = new PathBuilder()
-//                .addPath(
-//                        // Line 3
-//                        new BezierLine(
-//                                secondElementPos,
-//                                basket
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(1000)
-//                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45)).build();
-//
-//
-//        basketToThird = new PathBuilder()
-//                .addPath(
-//                        // Line 3
-//                        new BezierLine(
-//                                basket,
-//                                thirdElementPos
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(600)
-//                .setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(91)).build();
-//
-//        thirdToBasket = new PathBuilder()
-//                .addPath(
-//                        // Line 3
-//                        new BezierLine(
-//                                thirdElementPos,
-//                                basket
-//                        )
-//                )
-//                .setPathEndTimeoutConstraint(600)
-//                .setLinearHeadingInterpolation(Math.toRadians(91), Math.toRadians(-45)).build();
-//
-//
-//
-//
-//        follower = new Follower(hardwareMap);
-//
-//        intake = new IntakeSubsystem(hardwareMap);
-//        outtake = new OuttakeSubsystem(hardwareMap);
-//
-//
+package org.firstinspires.ftc.teamcode.Auto;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.RunCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
+import com.pedropathing.follower.FollowerConstants;
+import com.pedropathing.localization.GoBildaPinpointDriver;
+import com.pedropathing.localization.Pose;
+import com.pedropathing.localization.PoseUpdater;
+import com.pedropathing.localization.localizers.PinpointLocalizer;
+import com.pedropathing.pathgen.BezierCurve;
+import com.pedropathing.pathgen.PathBuilder;
+import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.util.Constants;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Subsystems.IOSubsystem;
+import org.firstinspires.ftc.teamcode.Subsystems.commands.FollowPathCommand;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
+import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
+
+/**
+ * This is the StraightBackAndForth autonomous OpMode. It runs the robot in a specified distance
+ * straight forward. On reaching the end of the forward Path, the robot runs the backward Path the
+ * same distance back to the start. Rinse and repeat! This is good for testing a variety of Vectors,
+ * like the drive Vector, the translational Vector, and the heading Vector. Remember to test your
+ * tunings on CurvedBackAndForth as well, since tunings that work well for straight lines might
+ * have issues going in curves.
+ *
+ * @author Anyi Lin - 10158 Scott's Bots
+ * @author Aaron Yang - 10158 Scott's Bots
+ * @author Harrison Womack - 10158 Scott's Bots
+ * @version 1.0, 3/12/2024
+ */
+@Config
+@Autonomous (name = "AutonomieStanga", group = "Auto")
+public class AutonomieStanga extends CommandOpMode {
+    private Telemetry telemetryA;
+    private Follower follower;
+
+    private IOSubsystem IO;
+
+    private Pose startPose = new Pose(7.1, 84, Math.toRadians(180));
+
+    private PathChain TohighBar;
+    private PathChain TofirstElement;
+    private PathChain ToBasket;
+    private PathChain ToSecondElement;
+    private PathChain ToThirdElement;
+
+    private PathChain ToSecondBasket;
+
+    private PathChain ToThirdBasket;
+
+    private PathChain ToParking;
+
+
+    private GoBildaPinpointDriver odo;
+
+
+//    private VoltageSensor volt;
+
+
+
+    private Point highBar = new Point(30, 77, Point.CARTESIAN);
+
+    private Point firstElement = new Point(18, 120, Point.CARTESIAN);
+
+    private Point Basket = new Point(11.528037383177569, 125.83177570093459, Point.CARTESIAN);
+
+    private Point secondElement = new Point(31, 73, Point.CARTESIAN);
+
+    private Point thirdElement = new Point(31, 73, Point.CARTESIAN);
+
+
+    private Point Parking   = new Point(58, 95.77570093457945, Point.CARTESIAN);
+
+
+    /**
+     * This initializes the Follower and creates the forward and backward Paths. Additionally, this
+     * initializes the FTC Dashboard telemetry.
+     */
+    @Override
+    public void initialize() {
+        Constants.setConstants(FConstants.class, LConstants.class);
+        follower = new Follower(hardwareMap);
+
+        odo = hardwareMap.get(GoBildaPinpointDriver.class,"pin");
+
+//        volt = hardwareMap.voltageSensor.iterator().next();
+
+//        follower.setMaxPower(0.88 * (12 / volt.getVoltage()));
+
+        IO = new IOSubsystem(hardwareMap);
+
+        IO.resetEncoder();
+
 //        follower.setStartingPose(startPose);
-//
-//        follower.setMaxPower(0.7);
-//
-//
-//        schedule(
-//                new InstantCommand(intake::armInit),
-//                new WaitCommand(300),
-//                new InstantCommand(() -> outtake.setArmAngle(0.4)),
-//                new InstantCommand(() -> outtake.setArticulationAngle(0.6)),
-////                new InstantCommand(() -> outtake.setGripperState(outtake.GRIPPING)),
-//                new InstantCommand(intake::sliderShell),
-//                new RunCommand(follower::update),
-//                new RunCommand(outtake::updatePID),
-//                new SequentialCommandGroup(
-//            new WaitUntilCommand(this::opModeIsActive),
-//                        new FollowPathCommand(follower, highBar)
-//                                .alongWith(
-//                                    new InstantCommand(() -> outtake.setTarget(-1050)),
-//                                    new InstantCommand(() -> outtake.setArmAngle(outtake.ARM_PLACE_ELEMENT + 0.12)),
-//                                    new InstantCommand(() -> outtake.setArticulationAngle(outtake.ARTICULATION_ELEMENT+0.07))
-//                                ),
-//                        new InstantCommand(() -> outtake.setTarget(-600)),
-//                        new WaitCommand(270),
-////                        new InstantCommand(() -> outtake.setGripperState(outtake.NOT_GRIPPING)),
-//                        new InstantCommand(() -> outtake.setTarget(0)),
-//                        new InstantCommand(() -> {
-//                            outtake.setArmAngle(outtake.ARM_TRANSFER);
-//                            outtake.setArticulationAngle(outtake.ARTICULATION_TRANSFER);
-//                        }),
-//                        new FollowPathCommand(follower, firstElement),
-//                        new SequentialCommandGroup(
-//                                new InstantCommand(() -> intake.readySetPosition(0.665)),
-//                                new WaitCommand(300),
-//                                new InstantCommand(() ->  intake.ArmAngle(intake.ARM_READY_POS+0.07)),
-//                                new WaitCommand(600),
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> intake.setPitch(intake.PITCH_GRIP + 0.05)),
-//                                        new InstantCommand(() -> intake.gripState(intake.NOT_GRIPPING)),
-//                                        new WaitCommand(100),
-//                                        new InstantCommand(intake::armToElement),
-//                                        new WaitCommand(150),
-//                                        new InstantCommand(() -> intake.gripState(intake.GRIPPING)),
-//                                        new WaitCommand(250),
-//                                        new InstantCommand(intake::armToReady)
-//                                ),
-//                                new WaitCommand(450),
-//                                new InstantCommand(() -> {
-//                                    intake.ArmAngle(intake.ARM_TRANSFER_POS);
-//                                    intake.setPitch(intake.PITCH_TRANSFER);
-//                                }),
-//                                new InstantCommand(intake::transferPosition),
-//                                new WaitCommand(450),
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> {
-//                                            intake.gripState(intake.NOT_GRIPPING);
-////                                            outtake.setGripperState(outtake.GRIPPING);
-//                                        }),
-//                                        new WaitCommand(150),
-//                                        new InstantCommand(() -> intake.setSliderPosition(intake.SLIDER_SHELLED + 0.15)),
-//                                        new WaitCommand(250),
-//                                        new InstantCommand(() -> outtake.readySetPosition(0.15))
-//                                )
-//                        ),
-//                        new FollowPathCommand(follower, firstToBasket)
-//                        .alongWith(
-//                            new SequentialCommandGroup(
-//                                    new InstantCommand(() -> outtake.setTarget(-2000)),
-//                                    new WaitUntilCommand(() -> outtake.getPosition() <= -1950)
-//                                            .andThen(
-//                                                    new InstantCommand(() -> outtake.setArmAngle(outtake.ARM_PLACE_ELEMENT+0.09)),
-//                                                    new WaitCommand(100),
-////                                                    new InstantCommand(() -> outtake.setGripperState(outtake.NOT_GRIPPING)),
-//                                                    new WaitCommand(250)
-//                                            ),
-//                                    new InstantCommand(() -> {
-//                                        outtake.setArmAngle(outtake.ARM_TRANSFER);
-//                                        outtake.setArticulationAngle(outtake.ARTICULATION_TRANSFER);
-//                                    }),
-//                                    new WaitCommand(250),
-//                                    new InstantCommand(() -> outtake.setTarget(2))
-//                            )
-//                        ),
-//                        new WaitCommand(800),
-//                        new FollowPathCommand(follower, basketToSecond),
-//                        new SequentialCommandGroup(
-//                                new InstantCommand(() -> intake.readySetPosition(0.675)),
-//                                new WaitCommand(300),
-//                                new InstantCommand(() ->  intake.ArmAngle(intake.ARM_READY_POS+0.07)),
-//                                new WaitCommand(600),
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> intake.setPitch(intake.PITCH_GRIP + 0.05)),
-//                                        new InstantCommand(() -> intake.gripState(intake.NOT_GRIPPING)),
-//                                        new WaitCommand(100),
-//                                        new InstantCommand(intake::armToElement),
-//                                        new WaitCommand(150),
-//                                        new InstantCommand(() -> intake.gripState(intake.GRIPPING)),
-//                                        new WaitCommand(250),
-//                                        new InstantCommand(intake::armToReady)
-//                                ),
-//                                new WaitCommand(450),
-//                                new InstantCommand(() -> {
-//                                    intake.ArmAngle(intake.ARM_TRANSFER_POS);
-//                                    intake.setPitch(intake.PITCH_TRANSFER);
-//                                }),
-//                                new InstantCommand(intake::transferPosition),
-//                                new WaitCommand(450),
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> {
-//                                            intake.gripState(intake.NOT_GRIPPING);
-////                                            outtake.setGripperState(outtake.GRIPPING);
-//                                        }),
-//                                        new WaitCommand(150),
-//                                        new InstantCommand(() -> intake.setSliderPosition(intake.SLIDER_SHELLED + 0.15)),
-//                                        new WaitCommand(250),
-//                                        new InstantCommand(() -> outtake.readySetPosition(0.15))
-//                                )
-//                        ),
-//                        new FollowPathCommand(follower, secondToBasket)
-//                        .alongWith(
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> outtake.setTarget(-2000)),
-//                                        new WaitUntilCommand(() -> outtake.getPosition() <= -1950)
-//                                                .andThen(
-//                                                        new InstantCommand(() -> outtake.setArmAngle(outtake.ARM_PLACE_ELEMENT+0.09)),
-//                                                        new WaitCommand(100),
-////                                                        new InstantCommand(() -> outtake.setGripperState(outtake.NOT_GRIPPING)),
-//                                                        new WaitCommand(100)
-//                                                ),
-//                                        new InstantCommand(() -> {
-//                                            outtake.setArmAngle(outtake.ARM_TRANSFER);
-//                                            outtake.setArticulationAngle(outtake.ARTICULATION_TRANSFER);
-//                                        }),
-//                                        new WaitCommand(300),
-//                                        new InstantCommand(() -> outtake.setTarget(2))
-//                                )
-//                        ),
-//                        new WaitCommand(800),
-//                        new FollowPathCommand(follower, basketToThird),
-//                        new SequentialCommandGroup(
-//                                new InstantCommand(() -> intake.readySetPosition(0.55)),
-//                                new WaitCommand(300),
-//                                new InstantCommand(() ->  intake.ArmAngle(intake.ARM_READY_POS+0.07)),
-//                                new InstantCommand(() -> intake.setYaw(intake.YAW_180)),
-//                                new WaitCommand(600),
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> {
-//                                            intake.setPitch(intake.PITCH_GRIP + 0.05);
-//                                            intake.gripState(intake.NOT_GRIPPING);
-//                                        }),
-//                                        new WaitCommand(100),
-//                                        new InstantCommand(intake::armToElement),
-//                                        new WaitCommand(150),
-//                                        new InstantCommand(() -> intake.gripState(intake.GRIPPING)),
-//                                        new WaitCommand(250),
-//                                        new InstantCommand(intake::armToReady)
-//                                ),
-//                                new WaitCommand(450),
-//                                new InstantCommand(intake::transferPosition),
-//                                new WaitCommand(200),
-//                                new InstantCommand(() -> {
-//                                    intake.ArmAngle(intake.ARM_TRANSFER_POS);
-//                                    intake.setPitch(intake.PITCH_TRANSFER);
-//                                }),
-//                                new WaitCommand(450),
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> {
-//                                            intake.gripState(intake.NOT_GRIPPING);
-////                                            outtake.setGripperState(outtake.GRIPPING);
-//                                        }),
-//                                        new WaitCommand(150),
-//                                        new InstantCommand(() -> intake.setSliderPosition(intake.SLIDER_SHELLED + 0.15)),
-//                                        new WaitCommand(250),
-//                                        new InstantCommand(() -> outtake.readySetPosition(0.15))
-//                                )
-//                        ),
-//                        new ParallelCommandGroup(
-//                                new SequentialCommandGroup(
-//                                        new InstantCommand(() -> outtake.setTarget(-2000)),
-//                                        new WaitCommand(1600),
-//                                        new WaitUntilCommand(() -> outtake.getPosition() <= -1950)
-//                                                .andThen(
-//                                                        new InstantCommand(() -> outtake.setArmAngle(outtake.ARM_PLACE_ELEMENT+0.09)),
-//                                                        new WaitCommand(100),
-////                                                        new InstantCommand(() -> outtake.setGripperState(outtake.NOT_GRIPPING)),
-//                                                        new WaitCommand(100)
-//                                                ),
-//                                        new InstantCommand(() -> {
-//                                            outtake.setArmAngle(outtake.ARM_TRANSFER);
-//                                            outtake.setArticulationAngle(outtake.ARTICULATION_TRANSFER);
-//                                        }),
-//                                        new WaitCommand(300),
-//                                        new InstantCommand(() -> outtake.setTarget(2))
-//                                ),
-//                                new FollowPathCommand(follower, thirdToBasket)
-//                            )
-//                        )
-//
-//        );
-//
-//        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-//    }
-//
-//    /**
-//     * This runs the OpMode, updating the Follower as well as printing out the debug statements to
-//     * the Telemetry, as well as the FTC Dashboard.
-//     */
-//
-//}
+
+        odo.setPosition(new Pose2D(DistanceUnit.INCH, startPose.getX(), startPose.getY(), AngleUnit.RADIANS, startPose.getHeading()));
+
+
+
+
+//        follower.setMaxPower(1);
+
+        // pozitie highBar
+
+        TohighBar = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(startPose.getX(), startPose.getY(), Point.CARTESIAN),
+                                highBar
+                        )
+                )
+                .setPathEndTimeoutConstraint(100)
+                .setConstantHeadingInterpolation(Math.toRadians(180))
+                .build();
+
+
+        // pozitia primului element
+
+        TofirstElement = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                highBar,
+                                firstElement
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(0)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+        ToBasket = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                firstElement,
+                                Basket
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-45)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+        ToSecondElement = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                Basket,
+                                new Point(Basket.getX() + 2.5, Basket.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(8)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+        ToSecondBasket = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(Basket.getX() + 2.5, Basket.getY(), Point.CARTESIAN),
+                                Basket
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(6), Math.toRadians(-45)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+        ToThirdElement = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                Basket,
+                                new Point(Basket.getX() + 2.5, Basket.getY(), Point.CARTESIAN)
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(30)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+        ToThirdBasket = follower.pathBuilder()
+                .addPath(
+                        new BezierLine(
+                                new Point(Basket.getX() + 2.5, Basket.getY(), Point.CARTESIAN),
+                                Basket
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(-45)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+         ToParking = follower.pathBuilder()
+                .addPath(
+                        new BezierCurve(
+                                Basket,
+                                new Point(63.252, 122.692, Point.CARTESIAN),
+                                Parking
+                        )
+                )
+                .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
+                .setLinearHeadingInterpolation(Math.toRadians(-45), Math.toRadians(90)) // unghiul cu care porneste si cel cu care termina
+                .build();
+
+
+//        IO.setArmPosition(IO.ARM_INIT-0.35);
+
+
+        // SLIDERUL MERGE DE LA 0 LA 1850 tick-uri
+        // UNGHIUL SLIDERULUI MERGE DE LA 0 la 2100 de tick-uri
+        // DIFFYPITCH se refera la miscarea sus jos a gripper-ului
+        // DIFFYYAW se refera la rotatia gripper-ului
+
+
+        schedule(
+                new RunCommand(IO::updatePosition),
+                new RunCommand(IO::updateAngle),
+                new RunCommand(follower::update),
+                new InstantCommand(IO::initDiffy),
+                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT+0.05)),
+                new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                new SequentialCommandGroup(
+                        new WaitUntilCommand(this::opModeIsActive),
+                        new FollowPathCommand(follower, TohighBar)
+                                .alongWith(
+                                        new SequentialCommandGroup(
+                                                new WaitCommand(400),
+                                                new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                                new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1700),
+                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.HoldPosition = 0.5)
+                                        )
+                                ),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 250),
+//                        new InstantCommand(() -> IO.HoldPosition = 0.5),b jgmbf ed43ew2
+                        new InstantCommand(() -> IO.setSliderTarget(700)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                        new InstantCommand(() -> IO.HoldPosition = 0),
+                        new WaitCommand(250),
+                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, TofirstElement),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new WaitCommand(450),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(180))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setSliderTarget(820)),
+                        new InstantCommand(() -> {
+                            IO.setArmPosition(IO.LOADING_SAMPLE);
+                            IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                        }),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 770),
+                        new WaitCommand(150),
+                        new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
+                        new WaitCommand(200),
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(350),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, ToBasket),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                        new InstantCommand(() -> IO.setSliderTarget(1800)),
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 1750),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.2)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(150)),
+                                        new WaitCommand(300),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                        new WaitCommand(250),
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
+                                        new InstantCommand(() -> IO.setSliderTarget(0))
+                                )
+                        ),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 50),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, ToSecondElement),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setSliderTarget(1090)),
+                        new InstantCommand(() -> {
+                            IO.setArmPosition(IO.LOADING_SAMPLE);
+                            IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                        }),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 1060),
+                        new WaitCommand(150),
+                        new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
+                        new WaitCommand(200),
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(350),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, ToSecondBasket),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                        new InstantCommand(() -> IO.setSliderTarget(1800)),
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 1750),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.2)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(150)),
+                                        new WaitCommand(300),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                        new WaitCommand(250),
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
+                                        new InstantCommand(() -> IO.setSliderTarget(0))
+                                )
+                        ),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 50),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, ToThirdElement),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                                        new InstantCommand(() -> IO.setAngleTarget(100))
+                                )
+                        ),
+                        new InstantCommand(() -> IO.setSliderTarget(1320)),
+                        new InstantCommand(() -> {
+                            IO.setArmPosition(IO.LOADING_SAMPLE);
+                            IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
+                            IO.setDiffyYaw(135);
+                        }),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 1290),
+                        new WaitCommand(150),
+                        new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
+                        new WaitCommand(200),
+                        new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                        new WaitCommand(350),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(follower, ToThirdBasket),
+                                new SequentialCommandGroup(
+                                        new InstantCommand(() -> IO.setSliderTarget(0)),
+                                        new InstantCommand(() -> IO.setAngleTarget(2100)),
+                                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                        new InstantCommand(() -> IO.setSliderTarget(1800)),
+                                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 1750),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.2)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(150)),
+                                        new WaitCommand(300),
+                                        new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                        new WaitCommand(250),
+                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
+                                        new InstantCommand(() -> IO.setSliderTarget(0))
+                                )
+                        ),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() <= 50),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
+                        new InstantCommand(() -> IO.setAngleTarget(900)),
+                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
+                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                        new FollowPathCommand(follower, ToParking),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.2)),
+                        new InstantCommand(() -> IO.setAngleTarget(2100))
+                )
+        );
+
+
+        telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+        telemetryA.update();
+    }
+
+
+    /**
+     * This runs the OpMode, updating the Follower as well as printing out the debug statements to
+     * the Telemetry, as well as the FTC Dashboard.
+     */
+}

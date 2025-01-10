@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing.tuners_tests.pid;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -57,6 +58,10 @@ public class StraightBackAndForth extends OpMode {
         follower = new Follower(hardwareMap);
 
         IO = new IOSubsystem(hardwareMap);
+
+        IO.initDiffy();
+        IO.setArmPosition(IO.ARM_INIT+0.05);
+        IO.setGripperState(IO.GRIPPING);
 
 //        IO.setArmPosition(IO.ARM_INIT-0.35);
 
