@@ -60,7 +60,6 @@ public class IOSubsystem extends SubsystemBase {
     private double kI2 = 0;
     private double kD2 = 0.0003;
 
-
     public static double kP = 0.00139;
     public static double kI = 0;
     public static double kD = 0.00014;
@@ -84,17 +83,19 @@ public class IOSubsystem extends SubsystemBase {
 
     double targetSlider = 0;
 
-    public double GRIPPING = 0.34      ;
+    public double GRIPPING = 0.33;
     public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.38;
-    public double LOADING_SAMPLE = 0.56;
-    public double LOADING_SPECIMEN = 0.6;
+    public double LOADING_SAMPLE = 0.58;
+    public double LOADING_SPECIMEN = 0.8;
+
+    public double PITCH_LOAD_SPECIMEN = 50;
 
     public double STRAIGHT = 0.77;
 
     public double ARM_INIT = 0.8;
 
-    public double PLACE_SPECIMEN = 0.5;
+    public double PLACE_SPECIMEN = 0.55;
     public double PITCH_TAKING_SAMPLE = 0;
 
 
@@ -117,7 +118,7 @@ public class IOSubsystem extends SubsystemBase {
         slider1.setDirection(DcMotorSimple.Direction.REVERSE);
         gripper.setDirection(Servo.Direction.FORWARD);
 
-        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         slider1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slider2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -141,13 +142,15 @@ public class IOSubsystem extends SubsystemBase {
     public void resetEncoder()
     {
         enc.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         enc.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slider1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setPid(double kP, double kI, double kD)
-    {
-        anglePID.setPID(kP, kI, kD);
-    }
+//    public void setPid(double kP, double kI, double kD)
+//    {
+//        anglePID.setPID(kP, kI, kD);
+//    }
 
 
     double ticks_in_degrees = 8192.00 / 360.00;
@@ -182,27 +185,27 @@ public class IOSubsystem extends SubsystemBase {
     }
 
     public void setArmPosition(double pos) {
-        arm.setPosition(pos+0.001);
-        arm2.setPosition(pos);
-    }
-
-    public void arm1(double pos) {
         arm.setPosition(pos);
-    }
-
-    public void arm2(double pos) {
         arm2.setPosition(pos);
     }
 
+//    public void arm1(double pos) {
+//        arm.setPosition(pos);
+//    }
+//
+//    public void arm2(double pos) {
+//        arm2.setPosition(pos);
+//    }
 
-    public void diffyTest(double desiredPitch, double desiredRoll)
-    {
-        double actualDegrees1 = desiredPitch + (desiredRoll/2);
-        double actualDegrees2 = desiredPitch - (desiredRoll/2);
 
-        Diffy1.setPosition(actualDegrees1 * TICK_PER_DEGREE);
-        Diffy2.setPosition(actualDegrees2 * TICK_PER_DEGREE);
-    }
+//    public void diffyTest(double desiredPitch, double desiredRoll)
+//    {
+//        double actualDegrees1 = desiredPitch + (desiredRoll/2);
+//        double actualDegrees2 = desiredPitch - (desiredRoll/2);
+//
+//        Diffy1.setPosition(actualDegrees1 * TICK_PER_DEGREE);
+//        Diffy2.setPosition(actualDegrees2 * TICK_PER_DEGREE);
+//    }
 
     public void setGripperState(double pos) {
         gripper.setPosition(pos);

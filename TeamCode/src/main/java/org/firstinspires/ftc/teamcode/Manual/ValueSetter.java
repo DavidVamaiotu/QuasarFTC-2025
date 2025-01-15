@@ -100,10 +100,10 @@ public class ValueSetter extends OpMode
         timeAngle.reset();
 
         IO = new IOSubsystem(hardwareMap);
-
-
+//
         IO.initDiffy();
 
+//        IO.asc_stage = IOSubsystem.ASCENT_STAGE.READY;
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
     }
@@ -281,18 +281,21 @@ public class ValueSetter extends OpMode
 //        IO.setDiffyYaw(YawPos);
 //        IO.setDiffyPitch(PitchPos);
 
-//        double powerF = output + ff;
-//
-//        double powerF2 = output2;
+        double powerF = output + ff;
 
-//        IO.setSliderPower(output2);
-//        IO.setArmPosition(IO.LOADING_SAMPLE);
+        double powerF2 = output2;
+
+//        IO.setSliderPower(-1);
+//        IO.setArmPosition(ARM_POS);
+
 //        IO.setDiffyPitch(90);
 //        IO.setDiffyYaw(90);
 
 
 //        IO.setPid(kP, kI, kD);
 //
+
+//        IO.setAnglePower(powerF);
 //        IO.setAngleTarget(targetAngle);
 //        IO.updateAngle();
 
@@ -300,16 +303,19 @@ public class ValueSetter extends OpMode
 //        IO.setArmPosition(0.3);
 
 //        IO.setArmPosition(ARM_POS);
-//        IO.setDiffyYaw(YawPos);
+        IO.setDiffyYaw(YawPos);
 
 
-//        IO.setDiffyPitch(PitchPos);
+        IO.setDiffyPitch(PitchPos);
 //        IO.setArmPosition(IO.ARM_INIT);
 
-        IO.setArmPosition(ARM_POS);
+//        IO.setArmPosition(ARM_POS);
+//
+//          IO.setArmPosition(ARM_POS);
+//          IO.setDiffyPitch(PitchPos);
 
 //        IO.setArmPosition(0.5);
-
+//        IO.setGripperState(GRIPPER);
 
 
 //        IO.arm1(0.5);

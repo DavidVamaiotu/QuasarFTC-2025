@@ -10,25 +10,17 @@ import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
-import com.pedropathing.follower.FollowerConstants;
+import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.GoBildaPinpointDriver;
 import com.pedropathing.localization.Pose;
-import com.pedropathing.localization.PoseUpdater;
-import com.pedropathing.localization.localizers.PinpointLocalizer;
 import com.pedropathing.pathgen.BezierCurve;
-import com.pedropathing.pathgen.PathBuilder;
+import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.PathChain;
+import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.pathgen.BezierLine;
-import com.pedropathing.pathgen.Path;
-import com.pedropathing.pathgen.Point;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -51,8 +43,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
  * @version 1.0, 3/12/2024
  */
 @Config
-@Autonomous (name = "AutonomieStanga", group = "Auto")
-public class AutonomieStanga extends CommandOpMode {
+@Autonomous (name = "AutonomieStangaCyliss", group = "Auto")
+public class AutonomieStangaCyliss extends CommandOpMode {
     private Telemetry telemetryA;
     private Follower follower;
 
@@ -80,7 +72,7 @@ public class AutonomieStanga extends CommandOpMode {
 
 
 
-    private Point highBar = new Point(31.5, 77, Point.CARTESIAN);
+    private Point highBar = new Point(30.5, 77, Point.CARTESIAN);
 
     private Point firstElement = new Point(18, 120, Point.CARTESIAN);
 
@@ -91,7 +83,7 @@ public class AutonomieStanga extends CommandOpMode {
     private Point thirdElement = new Point(31, 73, Point.CARTESIAN);
 
 
-    private Point Parking   = new Point(58, 95.37570093457945, Point.CARTESIAN);
+    private Point Parking   = new Point(58, 95.77570093457945, Point.CARTESIAN);
 
 
     /**
@@ -240,6 +232,7 @@ public class AutonomieStanga extends CommandOpMode {
                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
+                        new WaitCommand(3500),
                         new FollowPathCommand(follower, TohighBar)
                                 .alongWith(
                                         new SequentialCommandGroup(

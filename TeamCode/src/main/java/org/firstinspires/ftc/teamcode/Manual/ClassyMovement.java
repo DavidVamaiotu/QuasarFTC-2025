@@ -91,6 +91,7 @@ public class ClassyMovement extends CommandOpMode {
                         new WaitUntilCommand(this::opModeIsActive),
                         new InstantCommand(() -> IO.setAngleTarget(0)),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 50),
+                        new InstantCommand(() -> IO.setSliderTarget(0)),
                         new InstantCommand(IO::initDiffy),
                         new InstantCommand(() -> IO.setDiffyPitch(180)),
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT))
@@ -191,17 +192,16 @@ public class ClassyMovement extends CommandOpMode {
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
                 .whenActive(() -> { IO.setDiffyYaw(180); IO.setDiffyPitch(0.05); });
 
-
+        driver1.getGamepadButton(GamepadKeys.Button.B)
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
+                .whenActive(() -> IO.setGripperState(IO.NOT_GRIPPING) );
 
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenActive(() -> cam.EnableRendering())
                 .whileActiveContinuous(
                         new InstantCommand(() -> {
                             try {
-//                                double degreesCalculated = ALLIANCE ? cam.GetDegreesBlue() : cam.GetDegreesRed();
-//                                double addedValue = degreesCalculated - IO.currentDiffyYaw;
-//                                IO.setDiffyYaw(IO.currentDiffyYaw + addedValue);
-//                                IO.setDiffyPitch(-25);
+
                                 IO.setDiffyYaw(ALLIANCE ? cam.GetDegreesBlue() : cam.GetDegreesRed());
                                 IO.setDiffyPitch(0);
                             } catch(Exception ex) {
@@ -359,6 +359,15 @@ public class ClassyMovement extends CommandOpMode {
                         })
                 );
 
+        driver1.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE))
+                .whenActive(
+                        new InstantCommand(() -> {
+                            IO.setArmPosition(IO.ARM_INIT - 0.2);
+                            IO.setDiffyPitch(90);
+                        })
+                );
+
 
         driver2.getGamepadButton(GamepadKeys.Button.X)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.OUTTAKE_UNLOADING))
@@ -426,9 +435,9 @@ public class ClassyMovement extends CommandOpMode {
                                 // the first parameter is a map of commands
                                 new HashMap<Object, Command>() {{
                                     put(IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED, new SequentialCommandGroup(
-                                            new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT - 0.05)),
+                                            new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SPECIMEN)),
                                             new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
-                                            new InstantCommand(() -> IO.setDiffyPitch(60)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_LOAD_SPECIMEN)),
                                             new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN)
                                     ));
                                     put(IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN, new SequentialCommandGroup(
