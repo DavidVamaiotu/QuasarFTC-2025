@@ -98,9 +98,9 @@ public class AutonomieDreapta extends CommandOpMode {
 
     private PathChain CycleToSpecimen3;
 
-    private Point highBar = new Point(32.5, 63.5, Point.CARTESIAN);
+    private Point highBar = new Point(32.3, 63.5, Point.CARTESIAN);
 
-    private Point specimenIntake = new Point(8.64953, 33.21495327102804, Point.CARTESIAN);
+    private Point specimenIntake = new Point(9.44953, 33.21495327102804, Point.CARTESIAN);
 
     private Point firstElement = new Point(23, 23, Point.CARTESIAN);
 
@@ -134,7 +134,7 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(startPose.getX(), startPose.getY(), Point.CARTESIAN),
-                                highBar
+                                new Point(highBar.getX() - 0.8, highBar.getY(), Point.CARTESIAN)
                         )
                 )
                 .setPathEndTimeoutConstraint(100)
@@ -148,7 +148,7 @@ public class AutonomieDreapta extends CommandOpMode {
         TofirstElement = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                highBar,
+                                new Point(highBar.getX() - 0.8, highBar.getY(), Point.CARTESIAN),
                                 firstElement
                         )
                 )
@@ -242,7 +242,7 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN),
-                                new Point(24.36448598130841, 53.159, Point.CARTESIAN),
+                                new Point(22.36448598130841, 53.159, Point.CARTESIAN),
                                 new Point(highBar.getX(), highBar.getY() + 2, Point.CARTESIAN)
                         )
                 )
@@ -255,7 +255,7 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(highBar.getX(), highBar.getY() + 2, Point.CARTESIAN),
-                                new Point(24.36448598130841, 41.7196261682243, Point.CARTESIAN),
+                                new Point(22.36448598130841, 41.7196261682243, Point.CARTESIAN),
                                 new Point(specimenIntake.getX(), specimenIntake.getY()-0.8, Point.CARTESIAN)
                         )
                 )
@@ -267,8 +267,8 @@ public class AutonomieDreapta extends CommandOpMode {
         CycleToSpecimen2 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(highBar.getX(), highBar.getY() + 7, Point.CARTESIAN),
-                                new Point(24.36448598130841, 41.7196261682243, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 4, Point.CARTESIAN),
+                                new Point(22.36448598130841, 41.7196261682243, Point.CARTESIAN),
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN)
                         )
                 )
@@ -281,8 +281,8 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN),
-                                new Point(24.36448598130841, 53.159, Point.CARTESIAN),
-                                new Point(highBar.getX(), highBar.getY() + 7, Point.CARTESIAN)
+                                new Point(22.36448598130841, 53.159, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 4, Point.CARTESIAN)
                         )
                 )
                 .setPathEndTimeoutConstraint(100)
@@ -294,8 +294,8 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN),
-                                new Point(24.36448598130841, 53.159, Point.CARTESIAN),
-                                new Point(highBar.getX(), highBar.getY() + 9, Point.CARTESIAN)
+                                new Point(22.36448598130841, 53.159, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 6, Point.CARTESIAN)
                         )
                 )
                 .setPathEndTimeoutConstraint(100)
@@ -306,8 +306,8 @@ public class AutonomieDreapta extends CommandOpMode {
         CycleToSpecimen3 = follower.pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Point(highBar.getX(), highBar.getY() + 9, Point.CARTESIAN),
-                                new Point(24.36448598130841, 41.7196261682243, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 6, Point.CARTESIAN),
+                                new Point(22.36448598130841, 41.7196261682243, Point.CARTESIAN),
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN)
                         )
                 )
@@ -320,8 +320,8 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN),
-                                new Point(24.36448598130841, 53.159, Point.CARTESIAN),
-                                new Point(highBar.getX(), highBar.getY() + 11, Point.CARTESIAN)
+                                new Point(22.36448598130841, 53.159, Point.CARTESIAN),
+                                new Point(highBar.getX(), highBar.getY() + 8, Point.CARTESIAN)
                         )
                 )
                 .setPathEndTimeoutConstraint(50)
@@ -355,16 +355,16 @@ public class AutonomieDreapta extends CommandOpMode {
                                                 new WaitCommand(400),
                                                 new InstantCommand(() -> IO.setAngleTarget(2100)),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(175)),
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1700),
                                                 new InstantCommand(() -> IO.setSliderTarget(300)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.5)
                                         )
                                 ),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 250),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 200),
 //                        new InstantCommand(() -> IO.HoldPosition = 0.5),b jgmbf ed43ew2
-                        new InstantCommand(() -> IO.setSliderTarget(700)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setSliderTarget(850)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
@@ -377,18 +377,18 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new WaitCommand(250),
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                                         new InstantCommand(() -> IO.setDiffyPitch(180))
                                 )
                         ),
-                        new InstantCommand(() -> IO.setSliderTarget(500)),
+                        new InstantCommand(() -> IO.setSliderTarget(400)),
                         new InstantCommand(() -> {
-                            IO.setArmPosition(IO.LOADING_SAMPLE);
+                            IO.setArmPosition(IO.LOADING_SAMPLE+0.1);
                             IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                         }),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 450),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 380),
                         new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE + 13)),
                         new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
                         new WaitCommand(150),
@@ -412,18 +412,18 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(50))
+                                        new InstantCommand(() -> IO.setAngleTarget(0))
                                 )
                         ),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 100),
                         new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setSliderTarget(700)),
+                                new InstantCommand(() -> IO.setSliderTarget(560)),
                                 new InstantCommand(() -> {
                                     IO.setArmPosition(IO.LOADING_SAMPLE);
                                     IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                                     IO.setDiffyYaw(40);
                                 }),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 540),
                                 new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE + 13)),
                                 new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
                                 new WaitCommand(150),
@@ -448,18 +448,18 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(50))
+                                        new InstantCommand(() -> IO.setAngleTarget(0))
                                 )
                         ),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 100),
                         new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setSliderTarget(1150)),
+                                new InstantCommand(() -> IO.setSliderTarget(1100)),
                                 new InstantCommand(() -> {
-                                    IO.setArmPosition(IO.LOADING_SAMPLE);
+                                    IO.setArmPosition(IO.LOADING_SAMPLE+0.1);
                                     IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                                     IO.setDiffyYaw(20);
                                 }),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 1100),
+                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 1060),
                                 new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE + 13)),
                                 new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
                                 new WaitCommand(150),
@@ -484,7 +484,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                     new SequentialCommandGroup(
                                             new InstantCommand(() -> IO.setAngleTarget(900)),
                                             new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                            new InstantCommand(() -> IO.setAngleTarget(100)),
+                                            new InstantCommand(() -> IO.setAngleTarget(0)),
                                             new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SPECIMEN)),
                                             new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                             new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_LOAD_SPECIMEN))
@@ -498,16 +498,16 @@ public class AutonomieDreapta extends CommandOpMode {
                         new FollowPathCommand(follower, CycleToBar)
                                 .alongWith(
                                 new SequentialCommandGroup(
-                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                        new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                         new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(180)),
-                                        new InstantCommand(() -> IO.setSliderTarget(300)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(210)),
+                                        new InstantCommand(() -> IO.setSliderTarget(500)),
                                         new InstantCommand(() -> IO.HoldPosition = 0.3)
 
                                 )
                         ),
-                        new InstantCommand(() -> IO.setSliderTarget(700)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setSliderTarget(850)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
@@ -520,7 +520,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SPECIMEN)),
                                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                         new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_LOAD_SPECIMEN))
@@ -534,16 +534,16 @@ public class AutonomieDreapta extends CommandOpMode {
                         new FollowPathCommand(follower, CycleToBar2)
                                 .alongWith(
                                         new SequentialCommandGroup(
-                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
-                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(210)),
+                                                new InstantCommand(() -> IO.setSliderTarget(500)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.3)
 
                                         )
                                 ),
-                        new InstantCommand(() -> IO.setSliderTarget(700)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setSliderTarget(850)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
@@ -556,7 +556,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SPECIMEN)),
                                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                         new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_LOAD_SPECIMEN))
@@ -570,16 +570,16 @@ public class AutonomieDreapta extends CommandOpMode {
                         new FollowPathCommand(follower, CycleToBar3)
                                 .alongWith(
                                         new SequentialCommandGroup(
-                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
-                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(210)),
+                                                new InstantCommand(() -> IO.setSliderTarget(500)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.3)
 
                                         )
                                 ),
-                        new InstantCommand(() -> IO.setSliderTarget(700)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setSliderTarget(850)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
@@ -592,7 +592,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new WaitUntilCommand(() -> IO.getSliderPosition() <= 300),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SPECIMEN)),
                                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                         new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_LOAD_SPECIMEN))
@@ -606,21 +606,22 @@ public class AutonomieDreapta extends CommandOpMode {
                         new FollowPathCommand(follower, CycleToBar4)
                                 .alongWith(
                                         new SequentialCommandGroup(
-                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
+                                                new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
-                                                new InstantCommand(() -> IO.setSliderTarget(300)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(210)),
+                                                new InstantCommand(() -> IO.setSliderTarget(500)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.3)
 
                                         )
                                 ),
-                        new InstantCommand(() -> IO.setSliderTarget(700)),
-                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 650),
+                        new InstantCommand(() -> IO.setSliderTarget(850)),
+                        new WaitUntilCommand(() -> IO.getSliderPosition() >= 800),
                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                         new InstantCommand(() -> IO.HoldPosition = 0),
                         new WaitCommand(250),
-                        new InstantCommand(() -> IO.setDiffyPitch(90)),
-                        new InstantCommand(() -> IO.setArmPosition(0.5))
+                        new InstantCommand(() -> IO.setSliderTarget(750)),
+                        new InstantCommand(() -> IO.setDiffyPitch(90))
+//                        new InstantCommand(() -> IO.setArmPosition(0.5))
                 )
         );
 

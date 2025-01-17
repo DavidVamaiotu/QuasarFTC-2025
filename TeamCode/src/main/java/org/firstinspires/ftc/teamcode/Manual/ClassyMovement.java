@@ -230,7 +230,7 @@ public class ClassyMovement extends CommandOpMode {
                                             IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
                                             IO.stage = IOSubsystem.IO_STAGE.OUTTAKE;
                                             IO.setArmPosition(IO.ARM_INIT);
-                                            IO.setDiffyPitch(15);
+                                            IO.setDiffyPitch(30);
                                             IO.setDiffyYaw(90);
                                             IO.setSliderTarget(0);
                                         }),
@@ -253,7 +253,7 @@ public class ClassyMovement extends CommandOpMode {
                                     }),
                                     new InstantCommand(() -> IO.setAngleTarget(900)),
                                     new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                    new InstantCommand(() -> IO.setAngleTarget(100)),
+                                    new InstantCommand(() -> IO.setAngleTarget(0)),
                                     new SequentialCommandGroup(
                                             new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 150),
                                             new InstantCommand(() -> {
@@ -354,7 +354,7 @@ public class ClassyMovement extends CommandOpMode {
                             IO.HoldPosition = 0.65;
                             IO.setSliderTarget(1850);
                             // fa sa miste bratul aici
-                            IO.setArmPosition(IO.STRAIGHT-0.2);
+                            IO.setArmPosition(IO.STRAIGHT-0.15);
                             IO.setDiffyPitch(140);
                         })
                 );
@@ -390,7 +390,7 @@ public class ClassyMovement extends CommandOpMode {
                                         new InstantCommand(() -> IO.HoldPosition = 0),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new InstantCommand(() -> {
                                             IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED;
                                             IO.stage = IOSubsystem.IO_STAGE.INTAKE;
@@ -421,7 +421,7 @@ public class ClassyMovement extends CommandOpMode {
                                         new WaitCommand(250),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new InstantCommand(() -> IO.stage = IOSubsystem.IO_STAGE.INTAKE),
                                         new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED)
                                 )
@@ -438,6 +438,7 @@ public class ClassyMovement extends CommandOpMode {
                                             new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SPECIMEN)),
                                             new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                             new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_LOAD_SPECIMEN)),
+                                            new InstantCommand(() -> IO.setDiffyYaw(90)),
                                             new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN)
                                     ));
                                     put(IOSubsystem.SPECIMEN_STAGE.LOADING_SPECIMEN, new SequentialCommandGroup(
@@ -447,7 +448,7 @@ public class ClassyMovement extends CommandOpMode {
                                             new InstantCommand(() -> IO.setAngleTarget(2100)),
                                             new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                             new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                            new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                            new InstantCommand(() -> IO.setDiffyPitch(175)),
                                             new InstantCommand(() -> IO.setSliderTarget(300)),
                                             new InstantCommand(() -> IO.HoldPosition = 0.3),
                                             new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.PLACING_SPECIMEN)
@@ -463,7 +464,7 @@ public class ClassyMovement extends CommandOpMode {
                                             new WaitUntilCommand(() -> IO.getSliderPosition() <= 100),
                                             new InstantCommand(() -> IO.setAngleTarget(900)),
                                             new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                            new InstantCommand(() -> IO.setAngleTarget(100)),
+                                            new InstantCommand(() -> IO.setAngleTarget(0)),
                                             new InstantCommand(() -> IO.specStage = IOSubsystem.SPECIMEN_STAGE.UNINITIALIZED)
                                     ));
                                 }},

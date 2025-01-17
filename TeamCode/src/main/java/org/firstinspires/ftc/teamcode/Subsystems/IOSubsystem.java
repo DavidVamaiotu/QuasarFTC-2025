@@ -60,10 +60,10 @@ public class IOSubsystem extends SubsystemBase {
     private double kI2 = 0;
     private double kD2 = 0.0003;
 
-    public static double kP = 0.00139;
+    public static double kP = 0.0015;
     public static double kI = 0;
     public static double kD = 0.00014;
-    public static double kF = 0.1;
+    public static double kF = 0.6;
 
     public double HoldPosition = 0;
 
@@ -86,7 +86,7 @@ public class IOSubsystem extends SubsystemBase {
     public double GRIPPING = 0.33;
     public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.38;
-    public double LOADING_SAMPLE = 0.58;
+    public double LOADING_SAMPLE = 0.62;
     public double LOADING_SPECIMEN = 0.8;
 
     public double PITCH_LOAD_SPECIMEN = 50;
@@ -95,7 +95,7 @@ public class IOSubsystem extends SubsystemBase {
 
     public double ARM_INIT = 0.8;
 
-    public double PLACE_SPECIMEN = 0.55;
+    public double PLACE_SPECIMEN = 0.585;
     public double PITCH_TAKING_SAMPLE = 0;
 
 
@@ -189,13 +189,13 @@ public class IOSubsystem extends SubsystemBase {
         arm2.setPosition(pos);
     }
 
-//    public void arm1(double pos) {
-//        arm.setPosition(pos);
-//    }
-//
-//    public void arm2(double pos) {
-//        arm2.setPosition(pos);
-//    }
+    public void arm1(double pos) {
+        arm.setPosition(pos);
+    }
+
+    public void arm2(double pos) {
+        arm2.setPosition(pos);
+    }
 
 
 //    public void diffyTest(double desiredPitch, double desiredRoll)

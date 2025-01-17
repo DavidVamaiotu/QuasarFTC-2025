@@ -84,7 +84,7 @@ public class AutonomieStanga extends CommandOpMode {
 
     private Point firstElement = new Point(18, 120, Point.CARTESIAN);
 
-    private Point Basket = new Point(11.528037383177569, 125.83177570093459, Point.CARTESIAN);
+    private Point Basket = new Point(12.028037383177569, 125.83177570093459, Point.CARTESIAN);
 
     private Point secondElement = new Point(31, 73, Point.CARTESIAN);
 
@@ -236,7 +236,8 @@ public class AutonomieStanga extends CommandOpMode {
                 new RunCommand(IO::updateAngle),
                 new RunCommand(follower::update),
                 new InstantCommand(IO::initDiffy),
-                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT+0.05)),
+                new InstantCommand(() -> IO.setDiffyPitch(110)),
+                new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT+0.06)),
                 new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
@@ -246,7 +247,7 @@ public class AutonomieStanga extends CommandOpMode {
                                                 new WaitCommand(400),
                                                 new InstantCommand(() -> IO.setAngleTarget(2100)),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(180)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(175)),
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1700),
                                                 new InstantCommand(() -> IO.setSliderTarget(300)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.5)
@@ -267,7 +268,7 @@ public class AutonomieStanga extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                                        new InstantCommand(() -> IO.setAngleTarget(0)),
                                         new WaitCommand(450),
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                                         new InstantCommand(() -> IO.setDiffyPitch(180))
@@ -290,18 +291,21 @@ public class AutonomieStanga extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setSliderTarget(0)),
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                                        new InstantCommand(() -> IO.setArmPosition(0.48)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(125)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setSliderTarget(1800)),
+                                        new WaitCommand(350),
+                                        new InstantCommand(() -> IO.HoldPosition = 0.6),
                                         new WaitUntilCommand(() -> IO.getSliderPosition() >= 1750),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.2)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.15)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
                                         new InstantCommand(() -> IO.setDiffyPitch(150)),
                                         new WaitCommand(300),
                                         new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
                                         new WaitCommand(250),
+                                        new InstantCommand(() -> IO.HoldPosition = 0),
                                         new InstantCommand(() -> IO.setDiffyPitch(90)),
                                         new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
                                         new InstantCommand(() -> IO.setSliderTarget(0))
@@ -314,9 +318,10 @@ public class AutonomieStanga extends CommandOpMode {
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100))
+                                        new InstantCommand(() -> IO.setAngleTarget(0))
                                 )
                         ),
+                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 100),
                         new InstantCommand(() -> IO.setSliderTarget(1090)),
                         new InstantCommand(() -> {
                             IO.setArmPosition(IO.LOADING_SAMPLE);
@@ -334,13 +339,13 @@ public class AutonomieStanga extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setSliderTarget(0)),
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                                        new InstantCommand(() -> IO.setArmPosition(0.53)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(125)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setSliderTarget(1800)),
                                         new WaitUntilCommand(() -> IO.getSliderPosition() >= 1750),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.2)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.15)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
                                         new InstantCommand(() -> IO.setDiffyPitch(150)),
                                         new WaitCommand(300),
@@ -358,12 +363,13 @@ public class AutonomieStanga extends CommandOpMode {
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                                        new InstantCommand(() -> IO.setAngleTarget(100))
+                                        new InstantCommand(() -> IO.setAngleTarget(0))
                                 )
                         ),
+                        new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 100),
                         new InstantCommand(() -> IO.setSliderTarget(1320)),
                         new InstantCommand(() -> {
-                            IO.setArmPosition(IO.LOADING_SAMPLE);
+                            IO.setArmPosition(IO.LOADING_SAMPLE+0.05);
                             IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                             IO.setDiffyYaw(135);
                         }),
@@ -379,13 +385,13 @@ public class AutonomieStanga extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setSliderTarget(0)),
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
-                                        new InstantCommand(() -> IO.setArmPosition(0.5)),
+                                        new InstantCommand(() -> IO.setArmPosition(0.53)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(125)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setSliderTarget(1800)),
                                         new WaitUntilCommand(() -> IO.getSliderPosition() >= 1750),
-                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.2)),
+                                        new InstantCommand(() -> IO.setArmPosition(IO.STRAIGHT-0.15)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
                                         new InstantCommand(() -> IO.setDiffyPitch(150)),
                                         new WaitCommand(300),
@@ -400,9 +406,9 @@ public class AutonomieStanga extends CommandOpMode {
                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                         new InstantCommand(() -> IO.setAngleTarget(900)),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 1000),
-                        new InstantCommand(() -> IO.setAngleTarget(100)),
+                        new InstantCommand(() -> IO.setAngleTarget(0)),
                         new FollowPathCommand(follower, ToParking),
-                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.2)),
+                        new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT - 0.16)),
                         new InstantCommand(() -> IO.setAngleTarget(2100))
                 )
         );
