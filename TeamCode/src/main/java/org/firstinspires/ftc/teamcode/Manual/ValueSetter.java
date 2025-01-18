@@ -285,20 +285,20 @@ public class ValueSetter extends OpMode
 
         double powerF2 = output2;
 
-        IO.setSliderPower(output2);
-        IO.setArmPosition(ARM_POS);
-
+//        IO.setSliderPower(output2);
+//        IO.setArmPosition(ARM_POS);
+//
         IO.setGripperState(GRIPPER);
-
-        IO.setDiffyPitch(PitchPos);
-        IO.setDiffyYaw(90);
+//
+//        IO.setDiffyPitch(PitchPos);
+//        IO.setDiffyYaw(90);
 
 
 //        IO.setPid(kP, kI, kD);
 //
 
-        IO.setAnglePower(powerF*powerF*powerF);
-        IO.setAngleTarget(targetAngle);
+//        IO.setAnglePower(powerF*powerF*powerF);
+//        IO.setAngleTarget(targetAngle);
 //        IO.updateAngle();
 
 

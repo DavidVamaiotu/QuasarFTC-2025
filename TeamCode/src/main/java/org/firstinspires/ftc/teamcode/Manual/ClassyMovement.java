@@ -160,48 +160,51 @@ public class ClassyMovement extends CommandOpMode {
                                     new WaitUntilCommand(() -> IO.getSliderPosition() >= 700),
                                     new InstantCommand(() -> {
                                         IO.setArmPosition(IO.LOADING_SAMPLE);
+                                        IO.setGripperState(IO.INTERMEDIATE_GRIP);
                                         IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                                     })
                                 ),
                                 new SequentialCommandGroup(
                                         new InstantCommand(() -> IO.setDiffyPitch(90)),
+                                        new InstantCommand(() -> IO.setDiffyYaw(90)),
                                         new InstantCommand(() -> IO.setSliderTarget(0))
                                 ),
                                 () -> (IO.getSliderPosition() <= 700)
                         )
                 );
 
+        driver2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                        .whenPressed(() -> IO.setGripperState(IO.INTERMEDIATE_GRIP));
 
         driver2.getGamepadButton(GamepadKeys.Button.A)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(90); IO.setDiffyPitch(0.05); });
+                .whenActive(() -> { IO.setDiffyYaw(90); IO.setGripperState(IO.INTERMEDIATE_GRIP); IO.setDiffyPitch(0.05); });
 
         driver2.getGamepadButton(GamepadKeys.Button.X)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(45); IO.setDiffyPitch(0.05);});
+                .whenActive(() -> { IO.setDiffyYaw(45); IO.setGripperState(IO.INTERMEDIATE_GRIP); IO.setDiffyPitch(0.05);});
 
         driver2.getGamepadButton(GamepadKeys.Button.B)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(135); IO.setDiffyPitch(0.05); });
+                .whenActive(() -> { IO.setDiffyYaw(135); IO.setGripperState(IO.INTERMEDIATE_GRIP); IO.setDiffyPitch(0.05); });
 
         driver2.getGamepadButton(GamepadKeys.Button.Y)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
                 .and(new Trigger(() -> driver2.isDown(GamepadKeys.Button.RIGHT_BUMPER)))
-                .whenActive(() -> { IO.setDiffyYaw(180); IO.setDiffyPitch(0.05); });
+                .whenActive(() -> { IO.setDiffyYaw(180); IO.setGripperState(IO.INTERMEDIATE_GRIP); IO.setDiffyPitch(0.05); });
 
         driver1.getGamepadButton(GamepadKeys.Button.B)
                 .and(new Trigger(() -> IO.stage == IOSubsystem.IO_STAGE.INTAKE))
-                .whenActive(() -> IO.setGripperState(IO.NOT_GRIPPING) );
+                .whenActive(() -> IO.setGripperState(IO.INTERMEDIATE_GRIP) );
 
         driver2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenActive(() -> cam.EnableRendering())
+                .whenActive(() -> { cam.EnableRendering(); IO.setGripperState(IO.INTERMEDIATE_GRIP); })
                 .whileActiveContinuous(
                         new InstantCommand(() -> {
                             try {
-
                                 IO.setDiffyYaw(ALLIANCE ? cam.GetDegreesBlue() : cam.GetDegreesRed());
                                 IO.setDiffyPitch(0);
                             } catch(Exception ex) {
@@ -333,7 +336,7 @@ public class ClassyMovement extends CommandOpMode {
                 .whenActive(
                         new SequentialCommandGroup(
                                 new InstantCommand(() -> gamepad1.rumble(50)),
-                                new InstantCommand(() -> IO.setGripperState(IO.NOT_GRIPPING)),
+                                new InstantCommand(() -> IO.setGripperState(IO.INTERMEDIATE_GRIP)),
                                 new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE + 13)),
                                 new WaitCommand(100),
                                 new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE-0.08)),
@@ -386,6 +389,7 @@ public class ClassyMovement extends CommandOpMode {
                                             IO.setDiffyYaw(90);
                                         }),
                                         new WaitUntilCommand(() -> IO.getSliderPosition() <= 50),
+                                        new InstantCommand(() -> IO.setGripperState(IO.INTERMEDIATE_GRIP)),
                                         new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT)),
                                         new InstantCommand(() -> IO.HoldPosition = 0),
                                         new InstantCommand(() -> IO.setAngleTarget(900)),

@@ -86,8 +86,10 @@ public class IOSubsystem extends SubsystemBase {
     public double GRIPPING = 0.33;
     public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.38;
-    public double LOADING_SAMPLE = 0.62;
+    public double LOADING_SAMPLE = 0.63;
     public double LOADING_SPECIMEN = 0.8;
+
+    public double INTERMEDIATE_GRIP = 0.05;
 
     public double PITCH_LOAD_SPECIMEN = 50;
 

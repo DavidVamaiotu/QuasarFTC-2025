@@ -289,7 +289,6 @@ public class SolvePerspective extends OpenCvPipeline {
     }
 
     void analyzeContour(MatOfPoint contour, Mat input, String color) {
-        // Transform the contour to a different format
         double area = Imgproc.contourArea(contour);
 
         if (area < 30000) return;
@@ -297,28 +296,20 @@ public class SolvePerspective extends OpenCvPipeline {
         Point[] points = contour.toArray();
         MatOfPoint2f contour2f = new MatOfPoint2f(points);
 
-        // Do a rect fit to the contour, and draw it on the screen
         RotatedRect rotatedRectFitToContour = Imgproc.minAreaRect(contour2f);
 
         drawRotatedRect(rotatedRectFitToContour, input, color);
-
-        // The angle OpenCV gives us can be ambiguous, so look at the shape of
-        // the rectangle to fix that.
         double rotRectAngle = rotatedRectFitToContour.angle;
         if (rotatedRectFitToContour.size.width < rotatedRectFitToContour.size.height) {
             rotRectAngle += 90;
         }
 
-        // Compute the angle and store it
         double angle = -(rotRectAngle - 180);
         drawTagText(rotatedRectFitToContour, Integer.toString((int) Math.round(angle)) + " deg", input, color);
 
-        // Prepare object points and image points for solvePnP
-        // Assuming the object is a rectangle with known dimensions
-        double objectWidth = 8.9;  // Replace with your object's width in real-world units (e.g., centimeters)
-        double objectHeight = 3.8;  // Replace with your object's height in real-world units
+        double objectWidth = 8.9;
+        double objectHeight = 3.8;
 
-        // Define the 3D coordinates of the object corners in the object coordinate space
 //        MatOfPoint3f objectPoints = new MatOfPoint3f(
 //                new Point3(-objectWidth / 2, -objectHeight / 2, 0),
 //                new Point3(objectWidth / 2, -objectHeight / 2, 0),

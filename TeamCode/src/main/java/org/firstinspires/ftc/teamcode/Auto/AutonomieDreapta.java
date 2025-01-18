@@ -98,7 +98,7 @@ public class AutonomieDreapta extends CommandOpMode {
 
     private PathChain CycleToSpecimen3;
 
-    private Point highBar = new Point(32.3, 63.5, Point.CARTESIAN);
+    private Point highBar = new Point(32.6, 63.5, Point.CARTESIAN);
 
     private Point specimenIntake = new Point(9.44953, 33.21495327102804, Point.CARTESIAN);
 
@@ -116,7 +116,7 @@ public class AutonomieDreapta extends CommandOpMode {
 
         IO = new IOSubsystem(hardwareMap);
 
-        vSensor = hardwareMap.voltageSensor.iterator().next();
+//        vSensor = hardwareMap.voltageSensor.iterator().next();
 
         IO.resetEncoder();
 
@@ -134,7 +134,7 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierLine(
                                 new Point(startPose.getX(), startPose.getY(), Point.CARTESIAN),
-                                new Point(highBar.getX() - 0.8, highBar.getY(), Point.CARTESIAN)
+                                new Point(highBar.getX() - 0.5, highBar.getY(), Point.CARTESIAN)
                         )
                 )
                 .setPathEndTimeoutConstraint(100)
@@ -148,7 +148,7 @@ public class AutonomieDreapta extends CommandOpMode {
         TofirstElement = follower.pathBuilder()
                 .addPath(
                         new BezierLine(
-                                new Point(highBar.getX() - 0.8, highBar.getY(), Point.CARTESIAN),
+                                new Point(highBar.getX() - 0.5, highBar.getY(), Point.CARTESIAN),
                                 firstElement
                         )
                 )
@@ -165,7 +165,7 @@ public class AutonomieDreapta extends CommandOpMode {
                         )
                 )
                 .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
-                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-26)) // unghiul cu care porneste si cel cu care termina
+                .setLinearHeadingInterpolation(Math.toRadians(15), Math.toRadians(-29)) // unghiul cu care porneste si cel cu care termina
                 .build();
 
 
@@ -199,7 +199,7 @@ public class AutonomieDreapta extends CommandOpMode {
                         )
                 )
                 .setPathEndTimeoutConstraint(100) // cat timp sta sa se corecteze robotul
-                .setLinearHeadingInterpolation(Math.toRadians(-26), Math.toRadians(15)) // unghiul cu care porneste si cel cu care termina
+                .setLinearHeadingInterpolation(Math.toRadians(-29), Math.toRadians(15)) // unghiul cu care porneste si cel cu care termina
                 .build();
 
         ThirdElementPlace = follower.pathBuilder()
@@ -320,7 +320,7 @@ public class AutonomieDreapta extends CommandOpMode {
                 .addPath(
                         new BezierCurve(
                                 new Point(specimenIntake.getX(), specimenIntake.getY(), Point.CARTESIAN),
-                                new Point(22.36448598130841, 53.159, Point.CARTESIAN),
+                                new Point(22.66448598130841, 53.159, Point.CARTESIAN),
                                 new Point(highBar.getX(), highBar.getY() + 8, Point.CARTESIAN)
                         )
                 )
@@ -352,7 +352,7 @@ public class AutonomieDreapta extends CommandOpMode {
                         new FollowPathCommand(follower, TohighBar)
                                 .alongWith(
                                         new SequentialCommandGroup(
-                                                new WaitCommand(400),
+                                                new WaitCommand(200),
                                                 new InstantCommand(() -> IO.setAngleTarget(2100)),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
                                                 new InstantCommand(() -> IO.setDiffyPitch(175)),
@@ -453,13 +453,13 @@ public class AutonomieDreapta extends CommandOpMode {
                         ),
                         new WaitUntilCommand(() -> IO.getAngleMeasurement() <= 100),
                         new SequentialCommandGroup(
-                                new InstantCommand(() -> IO.setSliderTarget(1100)),
+                                new InstantCommand(() -> IO.setSliderTarget(1050)),
                                 new InstantCommand(() -> {
                                     IO.setArmPosition(IO.LOADING_SAMPLE+0.1);
                                     IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE);
                                     IO.setDiffyYaw(20);
                                 }),
-                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 1060),
+                                new WaitUntilCommand(() -> IO.getSliderPosition() >= 1000),
                                 new InstantCommand(() -> IO.setDiffyPitch(IO.PITCH_TAKING_SAMPLE + 13)),
                                 new InstantCommand(() -> IO.setArmPosition(IO.LOADING_SAMPLE - 0.08)),
                                 new WaitCommand(150),
