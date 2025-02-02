@@ -83,13 +83,13 @@ public class IOSubsystem extends SubsystemBase {
 
     double targetSlider = 0;
 
-    public double GRIPPING = 0.33;
+    public double GRIPPING = 0.355;
     public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.38;
-    public double LOADING_SAMPLE = 0.63;
+    public double LOADING_SAMPLE = 0.64;
     public double LOADING_SPECIMEN = 0.8;
 
-    public double INTERMEDIATE_GRIP = 0.05;
+    public double INTERMEDIATE_GRIP = 0.03;
 
     public double PITCH_LOAD_SPECIMEN = 50;
 
@@ -118,7 +118,7 @@ public class IOSubsystem extends SubsystemBase {
         arm2.setDirection(Servo.Direction.REVERSE);
         enc.setDirection(DcMotorSimple.Direction.REVERSE);
         slider1.setDirection(DcMotorSimple.Direction.REVERSE);
-        gripper.setDirection(Servo.Direction.FORWARD);
+        gripper.setDirection(Servo.Direction.REVERSE);
 
 //        slider1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
