@@ -84,7 +84,7 @@ public class AutonomieStanga extends CommandOpMode {
 
     private Point firstElement = new Point(18, 120, Point.CARTESIAN);
 
-    private Point Basket = new Point(12.028037383177569, 125.83177570093459, Point.CARTESIAN);
+    private Point Basket = new Point(11.028037383177569, 126.03177570093459, Point.CARTESIAN);
 
     private Point secondElement = new Point(31, 73, Point.CARTESIAN);
 
@@ -115,9 +115,7 @@ public class AutonomieStanga extends CommandOpMode {
 
 //        follower.setStartingPose(startPose);
 
-        odo.setPosition(new Pose2D(DistanceUnit.INCH, startPose.getX(), startPose.getY(), AngleUnit.RADIANS, startPose.getHeading()));
-
-
+        follower.setStartingPose(startPose);
 
 
 //        follower.setMaxPower(1);
@@ -239,7 +237,7 @@ public class AutonomieStanga extends CommandOpMode {
                 new InstantCommand(IO::initDiffy),
                 new InstantCommand(() -> IO.setDiffyPitch(110)),
                 new InstantCommand(() -> IO.setArmPosition(IO.ARM_INIT+0.06)),
-                new InstantCommand(() -> IO.setGripperState(IO.GRIPPING)),
+                new InstantCommand(() -> IO.setGripperState(IO.GRIPPING-0.005)),
                 new SequentialCommandGroup(
                         new WaitUntilCommand(this::opModeIsActive),
                         new FollowPathCommand(follower, TohighBar)
@@ -248,7 +246,7 @@ public class AutonomieStanga extends CommandOpMode {
                                                 new WaitCommand(200),
                                                 new InstantCommand(() -> IO.setAngleTarget(2100)),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(175)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(125)),
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1700),
                                                 new InstantCommand(() -> IO.setSliderTarget(300)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.5)
@@ -294,7 +292,7 @@ public class AutonomieStanga extends CommandOpMode {
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
                                         new InstantCommand(() -> IO.setArmPosition(0.48)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(125)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(75)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setSliderTarget(1800)),
                                         new WaitCommand(350),
@@ -342,7 +340,7 @@ public class AutonomieStanga extends CommandOpMode {
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
                                         new InstantCommand(() -> IO.setArmPosition(0.53)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(125)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(75)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setSliderTarget(1800)),
                                         new WaitCommand(350),
@@ -391,7 +389,7 @@ public class AutonomieStanga extends CommandOpMode {
                                         new InstantCommand(() -> IO.setAngleTarget(2100)),
                                         new InstantCommand(() -> IO.setArmPosition(0.53)),
                                         new InstantCommand(() -> IO.setDiffyYaw(90)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(125)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(75)),
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1950),
                                         new InstantCommand(() -> IO.setSliderTarget(1800)),
                                         new WaitCommand(350),

@@ -83,22 +83,22 @@ public class IOSubsystem extends SubsystemBase {
 
     double targetSlider = 0;
 
-    public double GRIPPING = 0.355;
+    public double GRIPPING = 0.36;
     public double NOT_GRIPPING = 0;
     public double PLACING_SAMPLE = 0.38;
-    public double LOADING_SAMPLE = 0.64;
-    public double LOADING_SPECIMEN = 0.8;
+    public double LOADING_SAMPLE = 0.59;
+    public double LOADING_SPECIMEN = 0.75;
 
     public double INTERMEDIATE_GRIP = 0.03;
 
-    public double PITCH_LOAD_SPECIMEN = 50;
+    public double PITCH_LOAD_SPECIMEN = 20;
 
     public double STRAIGHT = 0.77;
 
     public double ARM_INIT = 0.8;
 
-    public double PLACE_SPECIMEN = 0.585;
-    public double PITCH_TAKING_SAMPLE = 0;
+    public double PLACE_SPECIMEN = 0.535;
+    public double PITCH_TAKING_SAMPLE = -33;
 
 
     public IOSubsystem(final HardwareMap hMap) {
@@ -108,8 +108,8 @@ public class IOSubsystem extends SubsystemBase {
         slider2 = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "sldDr"));
         MoveAndDestroy = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "angle"));
         enc = new CachingDcMotorEx(hMap.get(DcMotorEx.class, "feed"));
-        Diffy1 = new CachingServo(hMap.get(Servo.class, "difL"));
-        Diffy2 = new CachingServo(hMap.get(Servo.class, "difD"));
+        Diffy1 = new CachingServo(hMap.get(Servo.class, "difD"));
+        Diffy2 = new CachingServo(hMap.get(Servo.class, "difL"));
         arm = new CachingServo(hMap.get(Servo.class, "arm"));
         arm2 = new CachingServo(hMap.get(Servo.class, "armX"));
         gripper = new CachingServo(hMap.get(Servo.class, "grip"));
@@ -250,9 +250,12 @@ public class IOSubsystem extends SubsystemBase {
         Diffy1.setPosition(0.5);
         Diffy2.setPosition(0.5);
     }
+
+    double ratio = 52.0/18.0;
+
     public void setDiffyYaw(double deg)
     {
-        double yawDifference = deg - currentDiffyYaw;
+        double yawDifference = (deg - currentDiffyYaw)/ratio;
         double addedPosition = yawDifference * TICK_PER_DEGREE;
 
         Diffy1.setPosition(currentDiffy1Position + addedPosition);

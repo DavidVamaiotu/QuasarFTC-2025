@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.pedroPathing.tuners_tests.pid;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.InstantCommand;
-import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.util.Constants;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -15,7 +13,6 @@ import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.Point;
 
-import org.firstinspires.ftc.teamcode.Subsystems.IOSubsystem;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -43,8 +40,6 @@ public class StraightBackAndForth extends OpMode {
 
     private Follower follower;
 
-    private IOSubsystem IO;
-
     private Path forwards;
     private Path backwards;
 
@@ -57,21 +52,12 @@ public class StraightBackAndForth extends OpMode {
         Constants.setConstants(FConstants.class, LConstants.class);
         follower = new Follower(hardwareMap);
 
-        IO = new IOSubsystem(hardwareMap);
-
-        IO.initDiffy();
-        IO.setArmPosition(IO.ARM_INIT+0.05);
-        IO.setGripperState(IO.GRIPPING);
-
-//        IO.setArmPosition(IO.ARM_INIT-0.35);
-
         forwards = new Path(new BezierLine(new Point(0,0, Point.CARTESIAN), new Point(DISTANCE,0, Point.CARTESIAN)));
         forwards.setConstantHeadingInterpolation(0);
         backwards = new Path(new BezierLine(new Point(DISTANCE,0, Point.CARTESIAN), new Point(0,0, Point.CARTESIAN)));
         backwards.setConstantHeadingInterpolation(0);
 
         follower.followPath(forwards);
-
 
         telemetryA = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
         telemetryA.addLine("This will run the robot in a straight line going " + DISTANCE
@@ -98,7 +84,6 @@ public class StraightBackAndForth extends OpMode {
         }
 
         telemetryA.addData("going forward", forward);
-        telemetryA.addData("PathEnd", FollowerConstants.pathEndTimeoutConstraint);
         follower.telemetryDebug(telemetryA);
     }
 }

@@ -98,7 +98,7 @@ public class AutonomieDreapta extends CommandOpMode {
 
     private PathChain CycleToSpecimen3;
 
-    private Point highBar = new Point(32.75, 63.5, Point.CARTESIAN);
+    private Point highBar = new Point(32.75, 64.5, Point.CARTESIAN);
 
     private Point specimenIntake = new Point(9.44953, 33.21495327102804, Point.CARTESIAN);
 
@@ -355,7 +355,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                                 new WaitCommand(200),
                                                 new InstantCommand(() -> IO.setAngleTarget(2100)),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(175)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(125)),
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1700),
                                                 new InstantCommand(() -> IO.setSliderTarget(300)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.5)
@@ -500,7 +500,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                 new SequentialCommandGroup(
                                         new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                         new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                        new InstantCommand(() -> IO.setDiffyPitch(208)),
+                                        new InstantCommand(() -> IO.setDiffyPitch(160)),
                                         new InstantCommand(() -> IO.setSliderTarget(500)),
                                         new InstantCommand(() -> IO.HoldPosition = 0.3)
 
@@ -536,7 +536,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new SequentialCommandGroup(
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(208)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(160)),
                                                 new InstantCommand(() -> IO.setSliderTarget(500)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.3)
 
@@ -572,7 +572,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new SequentialCommandGroup(
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(208)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(160)),
                                                 new InstantCommand(() -> IO.setSliderTarget(500)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.3)
 
@@ -608,7 +608,7 @@ public class AutonomieDreapta extends CommandOpMode {
                                         new SequentialCommandGroup(
                                                 new WaitUntilCommand(() -> IO.getAngleMeasurement() >= 1850),
                                                 new InstantCommand(() -> IO.setArmPosition(IO.PLACE_SPECIMEN)),
-                                                new InstantCommand(() -> IO.setDiffyPitch(208)),
+                                                new InstantCommand(() -> IO.setDiffyPitch(160)),
                                                 new InstantCommand(() -> IO.setSliderTarget(500)),
                                                 new InstantCommand(() -> IO.HoldPosition = 0.3)
 
